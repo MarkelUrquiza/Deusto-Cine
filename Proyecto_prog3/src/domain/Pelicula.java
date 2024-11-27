@@ -9,6 +9,7 @@ public class Pelicula {
 	private float duracion;
 	private String rutafoto;
 	private boolean tresd;	
+	private String horarios;
 	
 	public Pelicula() {
 		super();
@@ -16,7 +17,7 @@ public class Pelicula {
 		cont++;
 	}
 
-	public Pelicula(String titulo, Genero tipo, float duracion, String director, String rutafoto, boolean tresd) {
+	public Pelicula(String titulo, Genero tipo, float duracion, String director, String rutafoto, boolean tresd, String horarios) {
 		super();
 		this.id = cont;
 		this.titulo = titulo;
@@ -25,6 +26,7 @@ public class Pelicula {
 		this.director = director;
 		this.rutafoto = rutafoto;
 		this.tresd = tresd;
+		this.horarios = horarios;
 		cont++;
 	}
 
@@ -90,6 +92,14 @@ public class Pelicula {
 
 	public void setDuracion(float duracion) {
 		this.duracion = duracion;
+	}
+
+	public String getHorarios() {
+		return horarios;
+	}
+
+	public void setHorarios(String horarios) {
+		this.horarios = horarios;
 	}
 
 	

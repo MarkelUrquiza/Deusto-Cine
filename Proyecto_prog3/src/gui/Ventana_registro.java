@@ -11,9 +11,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import db.BBDD;
+import domain.Cliente;
 
 public class Ventana_registro extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -23,8 +27,7 @@ public class Ventana_registro extends JFrame {
     private JLabel user, contrasenia, confirmar, nombre, apellido, dni, correo;
     private JTextField u, con, conf, nom, ape, dn, cor;
     private JFrame vIncial, vActual;
-
-    public Ventana_registro(JFrame vI) {
+    public Ventana_registro(JFrame vI, BBDD bd) {
         vIncial = vI;
         vActual = this;
 
@@ -88,6 +91,37 @@ public class Ventana_registro extends JFrame {
         
         btnregistrar = new JButton("Registrar");
         btnregistrar.setFont(fuente);
+        btnregistrar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!conf.getText().equals(con.getText())) {
+					JOptionPane.showConfirmDialog(null, "Contraseña y Confirmar contraseña no son iguales",
+							"Contraseñas mal!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					con.setText("");
+					conf.setText("");
+				} else {
+					if (nom.getText().isEmpty() || ape.getText().isEmpty() || cor.getText().isEmpty() || dn.getText().isEmpty()
+							|| u.getText().isEmpty() || con.getText().isEmpty() || conf.getText().isEmpty()) {
+						JOptionPane.showConfirmDialog(null, "Hay que rellenar todos los huecos",
+								"CUIDADO!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						if (bd.existeUsuario(u.getText(), dn.getText(), cor.getText())) {
+							u.setText("");con.setText("");nom.setText("");ape.setText("");dn.setText("");cor.setText("");
+							JOptionPane.showConfirmDialog(null, "Este DNI, correo o nombre de usuario ya esta en uso",
+									"Usuario existente!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null);
+							bd.registrar(c);
+							dispose();
+							vI.setVisible(true);
+						}
+						
+					}
+				}
+				
+			}
+		});
         
         btncancelar = new JButton("Cancelar");
         btncancelar.setFont(fuente);
@@ -116,6 +150,7 @@ public class Ventana_registro extends JFrame {
         pcentro.add(con);
         pcentro.add(confirmar);
         pcentro.add(conf);
+        
 
         psur.add(btncancelar);
         psur.add(btnregistrar);

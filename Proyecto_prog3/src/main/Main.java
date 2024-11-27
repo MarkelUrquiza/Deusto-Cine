@@ -1,8 +1,8 @@
 package main;
 
+import db.BBDD;
 import domain.Cartelera;
 import gui.Inicio_sesion;
-import gui.VentanaSeleccionarEntradas;
 
 public class Main {
 
@@ -10,8 +10,13 @@ public class Main {
         Cartelera cartelera = new Cartelera();
         cartelera.setCartelera(cartelera.cargarCartelera());
         
-		new Inicio_sesion(cartelera);
+		BBDD bd = new BBDD();
+		bd.crearBBDD();
+		bd.insertardatosporDefecto();
+        
+		new Inicio_sesion(cartelera,bd);
 		//new VentanaSeleccionarEntradas(1);
+
 	}
 
 }

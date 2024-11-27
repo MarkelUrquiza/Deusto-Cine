@@ -79,7 +79,7 @@ public class Sala {
 				
 				String[] fechas = campos[7].split(",");
 				if (id_sala==this.id) {
-					Pelicula peli = new Pelicula(titulo, tipo, duracion, dir, rutafoto, tresd);
+					Pelicula peli = new Pelicula(titulo, tipo, duracion, dir, rutafoto, tresd,null);
 					for (int i = 0; i < fechas.length; i++) {
 						if (!horarios.keySet().contains(fechas[i])) {
 							this.horarios.put(fechas[i],peli);

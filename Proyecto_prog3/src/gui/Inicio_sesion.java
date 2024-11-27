@@ -13,7 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+
+import db.BBDD;
 import domain.Cartelera;
 
 public class Inicio_sesion extends JFrame {
@@ -26,7 +29,7 @@ public class Inicio_sesion extends JFrame {
     private JButton btninicio, btncierre, btnregistro;
     private JFrame vActual;
     
-    public Inicio_sesion(Cartelera cartelera) {
+    public Inicio_sesion(Cartelera cartelera, BBDD bd) {
         vActual = this;
         setTitle("Inicio de Sesion");
         setSize(600, 400);
@@ -53,10 +56,10 @@ public class Inicio_sesion extends JFrame {
         contrasenia.setHorizontalAlignment(JLabel.LEFT);
         contrasenia.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        nom = new JTextField("nombre", 20);
+        nom = new JTextField(20);
         nom.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        con = new JPasswordField("contrasenia", 20);
+        con = new JPasswordField(20);
         con.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Configurar botones y acciones
@@ -68,7 +71,7 @@ public class Inicio_sesion extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new Ventana_registro(vActual);
+                new Ventana_registro(vActual, bd);
             }
         });
         
@@ -79,9 +82,17 @@ public class Inicio_sesion extends JFrame {
                 nom.setText("");
                 con.setText("");
             } else {
-                if (nom.getText().equals("nombre") && con.getText().equals("contrasenia")) {
-                    new Ventana_inicial(cartelera);
+                if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
                     dispose();
+                	JOptionPane.showConfirmDialog(null, "Bienvenido a nuestro cine "+nom.getText(), "Bienvenido", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                	try {
+						Thread.sleep(2000);
+	                    new Ventana_inicial(cartelera);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
                 }
             }
         });
@@ -125,4 +136,5 @@ public class Inicio_sesion extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setVisible(true);
     }
+   
 }
