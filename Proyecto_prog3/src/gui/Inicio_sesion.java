@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 
 import db.BBDD;
 import domain.Cartelera;
+import domain.Cliente;
 
 public class Inicio_sesion extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -83,15 +84,11 @@ public class Inicio_sesion extends JFrame {
                 con.setText("");
             } else {
                 if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
+                	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
+                	c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
                     dispose();
                 	JOptionPane.showConfirmDialog(null, "Bienvenido a nuestro cine "+nom.getText(), "Bienvenido", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                	try {
-						Thread.sleep(2000);
-	                    new Ventana_inicial(cartelera);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+                	new Ventana_inicial(cartelera, c, bd);
 
                 }
             }

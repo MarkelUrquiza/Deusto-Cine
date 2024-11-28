@@ -108,7 +108,7 @@ public class Cliente{
 				boolean vip = Boolean.valueOf(campos[5]);
 				String hora = campos[6];
 				
-				Butaca butaca = new Butaca(fila, column, vip, true, id_sala);
+				Butaca butaca = new Butaca(fila, Columna.values()[column], vip, true, id_sala);
 				Entrada entrada = new Entrada(butaca, id_peli, titulo, id_sala,10,hora);
 
 				

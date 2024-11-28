@@ -48,10 +48,10 @@ public class Sala {
 	
 	public ArrayList<Butaca> crearButacas() {
 		ArrayList<Butaca> asientos = new ArrayList<Butaca>();
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 10; j++) {
-				Butaca b = new Butaca(i, j, false, false,this.id);
-				if (i==6||i==7) {
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 6; j++) {
+				Butaca b = new Butaca(i, Columna.values()[j], false, false,this.id);
+				if (i==8||i==9) {
 					b.setVip(true);
 				}
 				asientos.add(b);

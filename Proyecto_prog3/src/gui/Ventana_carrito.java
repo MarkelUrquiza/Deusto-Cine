@@ -21,6 +21,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import db.BBDD;
 import domain.Butaca;
 import domain.Cartelera;
 import domain.Cliente;
@@ -38,7 +40,7 @@ public class Ventana_carrito extends JFrame{
 	private DefaultTableModel modelocarrito;
 	private JScrollPane scrollTabla;
 	private JFrame vActual, vInicial;
-	public Ventana_carrito(Cliente c, JFrame vI, Cartelera cartelera){
+	public Ventana_carrito(Cliente c, JFrame vI, Cartelera cartelera, BBDD bd){
 		vInicial = vI;
 		vActual = this;
 		pfiltro = new JPanel(new GridLayout(1,2));
@@ -103,7 +105,7 @@ public class Ventana_carrito extends JFrame{
 		String [] titulos = {"PELICULA","SALA","FILA BUTACA","COLUMNA BUTACA","BUTACA VIP","FECHA","PRECIO","NUMERO DE ENTRADAS"};
 		modelocarrito.setColumnIdentifiers(titulos);
 		
-		cargarTablaCarrito(c);	
+		cargarTablaCarrito(c, bd);	
 		tablacarrito.setFillsViewportHeight(true);
 		tablacarrito.getTableHeader().setReorderingAllowed(false);
 		
@@ -156,14 +158,14 @@ public class Ventana_carrito extends JFrame{
 		setVisible(true);
 	}
 	
-	public void cargarTablaCarrito(Cliente c) {
+	public void cargarTablaCarrito(Cliente c, BBDD bd) {
 		
 		if (c.getCarrito_de_compra()!=null) {
 			modelocarrito.setRowCount(0);
 			for (Entrada entrada: c.getCarrito_de_compra().keySet()) {
-				Butaca butaca = entrada.getAsiento();
-				boolean vip = butaca.isVip();
-				if (vip) {
+				int id_butaca = bd.obtenerButacaporIddeEntrada(entrada.getId());
+				Butaca butaca = bd.obtenerButacaporId(id_butaca);
+				if (butaca.isVip()) {
 					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),10,c.getCarrito_de_compra().get(entrada)};
 					modelocarrito.addRow(fila);
 				} else {

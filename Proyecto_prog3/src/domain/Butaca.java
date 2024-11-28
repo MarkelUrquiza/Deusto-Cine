@@ -1,14 +1,19 @@
 package domain;
 
 public class Butaca implements Reservable{
+	private static int cont = 1;
+	private int id;
 	private int fila;
-	private int columna;
+	private Columna columna;
 	private boolean vip;
 	private boolean estado;
 	private int id_sala;
 
-	public Butaca(int fila, int columna, boolean vip, boolean estado, int id_sala) {
+	
+	public Butaca(int fila, Columna columna, boolean vip, boolean estado, int id_sala) {
 		super();
+		this.id = cont;
+		cont ++;
 		this.fila = fila;
 		this.columna = columna;
 		this.vip = vip;
@@ -16,7 +21,10 @@ public class Butaca implements Reservable{
 		this.id_sala = id_sala;
 	}
 	
-	
+	public int getId() {
+		return id;
+	}
+
 	public int getId_sala() {
 		return id_sala;
 	}
@@ -29,22 +37,20 @@ public class Butaca implements Reservable{
 		this.fila = fila;
 	}
 
-	public int getColumna() {
+	public Columna getColumna() {
 		return columna;
 	}
 
 
 
-	public void setColumna(int columna) {
+	public void setColumna(Columna columna) {
 		this.columna = columna;
 	}
-
 
 
 	public boolean isVip() {
 		return vip;
 	}
-
 
 
 	public void setVip(boolean vip) {

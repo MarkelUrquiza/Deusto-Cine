@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+
+import db.BBDD;
 import domain.Cartelera;
 import domain.Cliente;
 import domain.Pelicula;
@@ -29,7 +31,7 @@ public class Ventana_inicial extends JFrame{
 	private JScrollPane scroll;
 	private JFrame vActual;
 	
-	public Ventana_inicial(Cartelera cartelera) {
+	public Ventana_inicial(Cartelera cartelera, Cliente c, BBDD bd) {
 		vActual = this;
 		pcentro = new JPanel();
 		psur = new JPanel();
@@ -54,9 +56,7 @@ public class Ventana_inicial extends JFrame{
 		psur.add(carrito);
 		carrito.setFont(fuentebtn);
 		carrito.addActionListener(e -> {
-			Cliente c = new Cliente("nombre", "contrasenia", "Markel", "Urquiza", "791258886k", "markel.urquiza@opendeusto.es", null);
-			c.setCarrito_de_compra(c.cargarEntradas());
-			new Ventana_carrito(c,vActual,cartelera);
+			new Ventana_carrito(c,vActual,cartelera,bd);
 			vActual.setVisible(false);
 		});
 		psur.add(cerrarsesion);
