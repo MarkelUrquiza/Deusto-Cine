@@ -73,6 +73,12 @@ public class Entrada {
 		return id_peli;
 	}
 
+	@Override
+	public String toString() {
+		return "Entrada [id=" + id + ", asiento=" + asiento + ", sala=" + sala + ", id_peli=" + id_peli
+				+ ", titulo_peli=" + titulo_peli + ", horario=" + horario + ", precio=" + precio + "]";
+	}
+
 	
 	
 	

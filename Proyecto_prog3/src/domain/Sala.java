@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import db.BBDD;
+
 public class Sala {
 	private static int cont = 1;
 	private int id;
-	private ArrayList<Butaca> butacas;
+	private HashMap<String, ArrayList<Butaca>> butacas;
 	private HashMap<String, Pelicula> horarios;
 	
 	public Sala() {
@@ -18,7 +20,7 @@ public class Sala {
 		cont ++;
 	}
 
-	public Sala(ArrayList<Butaca> butacas, HashMap<String, Pelicula> horarios) {
+	public Sala(HashMap<String, ArrayList<Butaca>> butacas, HashMap<String, Pelicula> horarios) {
 		super();
 		this.id = cont;
 		cont ++;
@@ -30,11 +32,11 @@ public class Sala {
 		return id;
 	}
 
-	public ArrayList<Butaca> getButacas() {
+	public HashMap<String, ArrayList<Butaca>> getButacas() {
 		return butacas;
 	}
 
-	public void setButacas(ArrayList<Butaca> butacas) {
+	public void setButacas(HashMap<String, ArrayList<Butaca>> butacas) {
 		this.butacas = butacas;
 	}
 
@@ -50,7 +52,7 @@ public class Sala {
 		ArrayList<Butaca> asientos = new ArrayList<Butaca>();
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 6; j++) {
-				Butaca b = new Butaca(i, Columna.values()[j], false, false,this.id);
+				Butaca b = new Butaca(i, Columna.values()[j], false, this.id);
 				if (i==8||i==9) {
 					b.setVip(true);
 				}
@@ -61,7 +63,7 @@ public class Sala {
 		return asientos;
 	}
 	
-	public void cargarPelis() {
+	public void cargarPelis(BBDD bd) {
 		this.horarios= new HashMap<String, Pelicula>();
 		try {
 			File f = new File("resource/data/Pelis.txt");
@@ -79,7 +81,8 @@ public class Sala {
 				
 				String[] fechas = campos[7].split(",");
 				if (id_sala==this.id) {
-					Pelicula peli = new Pelicula(titulo, tipo, duracion, dir, rutafoto, tresd,null);
+					int id_peli = bd.obtenerIdPeliculaPorTitulo(titulo);
+					Pelicula peli = new Pelicula(id_peli ,id_sala,titulo, tipo, duracion, dir, rutafoto, tresd,null);
 					for (int i = 0; i < fechas.length; i++) {
 						if (!horarios.keySet().contains(fechas[i])) {
 							this.horarios.put(fechas[i],peli);

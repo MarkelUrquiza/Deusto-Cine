@@ -19,7 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import db.BBDD;
 import domain.Cartelera;
+import domain.Cliente;
 import domain.Pelicula;
 import domain.Sala;
 
@@ -34,7 +37,7 @@ public class Aniadir_carrito extends JFrame {
 	private JTextArea info;
 	private JFrame vActual,vInicial;
 
-	public Aniadir_carrito(JFrame vI,Cartelera cartelera,String valor){
+	public Aniadir_carrito(JFrame vI,Cartelera cartelera,String valor, BBDD bd, Cliente c){
 		vActual = this;
 		vInicial = vI;
 		
@@ -101,9 +104,12 @@ public class Aniadir_carrito extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Object resultado = JOptionPane.showInputDialog(null, "Cuantas entradas quieres aniadir?", "Numero de entradas", 
 						JOptionPane.QUESTION_MESSAGE, null, new Object[] {1,2,3,4}, 1);
-				new VentanaSeleccionarEntradas(vActual,Integer.parseInt(resultado.toString()));
-				vActual.setEnabled(false);
-								
+				if (resultado != null) {
+					String value = listapelis.getSelectedValue();
+					Pelicula p = bd.obtenerPeliculaportitulo(value);
+					new VentanaSeleccionarEntradas(vI,vActual,Integer.parseInt(resultado.toString()),bd,p.getId_sala(),p.getTitulo(),c,horarios.getSelectedItem().toString(),cartelera);
+					vActual.setEnabled(false);
+				}								
 			}
 		});
 		btncancelar = new JButton("Cancelar");

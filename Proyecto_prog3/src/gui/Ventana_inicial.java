@@ -8,6 +8,9 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -41,7 +44,7 @@ public class Ventana_inicial extends JFrame{
 		cerrarsesion = new JButton("Cerrar Sesion");
 		
 		titulo = new JLabel("Cartelera");
-		cargarPelis(cartelera);
+		cargarPelis(cartelera,bd, c);
 		
 		Font fuente = new Font(getName(),Font.BOLD , 30);
 		titulo.setFont(fuente);
@@ -79,61 +82,56 @@ public class Ventana_inicial extends JFrame{
 		setVisible(true);
 		
 	}
-	public void cargarPelis(Cartelera cartelera) {
-		
-		ArrayList<Pelicula> pelis = new ArrayList<>();
+	public void cargarPelis(Cartelera cartelera, BBDD bd, Cliente c) {
+		Set<Pelicula> setpelis = new HashSet<Pelicula>();
 		for (Sala sala : cartelera.getCartelera()) {
 			for(String date : sala.getHorarios().keySet()) {
-				if (!pelis.contains(sala.getHorarios().get(date))) {
-					JPanel peli = new JPanel(new BorderLayout());
-					ImageIcon img = new ImageIcon(sala.getHorarios().get(date).getRutafoto());
-					Image imagenOriginal = img.getImage();
-			        Image imagenRedimensionada = imagenOriginal.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-			        ImageIcon imgredimensionada = new ImageIcon(imagenRedimensionada);
-					peli.add(new JLabel(imgredimensionada),BorderLayout.CENTER);
-					String titulo = sala.getHorarios().get(date).getTitulo();
-					JLabel titulopeli = new JLabel(titulo);
-					titulopeli.setHorizontalAlignment(SwingConstants.CENTER);
-					peli.add(titulopeli,BorderLayout.SOUTH);
-					
-					peli.addMouseListener(new MouseListener() {
-						
-						@Override
-						public void mouseReleased(MouseEvent e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void mousePressed(MouseEvent e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void mouseExited(MouseEvent e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void mouseEntered(MouseEvent e) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							// TODO Auto-generated method stub
-							vActual.setEnabled(false);
-							new Aniadir_carrito(vActual, cartelera, titulo);
-							
-						}
-					});
-					pcentro.add(peli);
-					pelis.add(sala.getHorarios().get(date));
-				}
+				setpelis.add(sala.getHorarios().get(date));
 			}
+		}
+		ArrayList<Pelicula> pelis = new ArrayList<>(setpelis);
+		for(Pelicula p: pelis) {
+			JPanel peli = new JPanel(new BorderLayout());
+			ImageIcon img = new ImageIcon(p.getRutafoto());
+			Image imagenOriginal = img.getImage();
+	        Image imagenRedimensionada = imagenOriginal.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+	        ImageIcon imgredimensionada = new ImageIcon(imagenRedimensionada);
+			peli.add(new JLabel(imgredimensionada),BorderLayout.CENTER);
+			String titulo = p.getTitulo();
+			JLabel titulopeli = new JLabel(titulo);
+			titulopeli.setHorizontalAlignment(SwingConstants.CENTER);
+			peli.add(titulopeli,BorderLayout.SOUTH);
+			
+			peli.addMouseListener(new MouseListener() {
+				
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					
+				}
+				
+				@Override
+				public void mousePressed(MouseEvent e) {
+					
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+					
+				}
+				
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					
+				}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					vActual.setEnabled(false);
+					new Aniadir_carrito(vActual, cartelera, titulo, bd,c);
+					
+				}
+			});
+			pcentro.add(peli);
 		}
 		
 	}

@@ -2,74 +2,91 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import db.BBDD;
+import domain.Butaca;
+import domain.Cartelera;
+import domain.Cliente;
+import domain.Entrada;
+import domain.Pelicula;
 
 public class VentanaSeleccionarEntradas extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private JTabbedPane pagina;
-    private JLabel nombre, apellido1, apellido2, edadLabel;
-    private JTextField nom, ap1, ap2;
-    private JSlider edad;
-    private Thread edadThread;
-    private JFrame vNueva;  // Nueva ventana
-    private JFrame vActual; // Ventana actual
+    private JFrame vNueva;
+    private JFrame vActual;
+    private JFrame vAnterior;
+    private ArrayList<Butaca> butacasSeleccionadas = new ArrayList<>();
 
-    public VentanaSeleccionarEntradas(JFrame vI, int numeroPersonas) {
-        vNueva = vI; // Asignar la ventana inicial
-        vActual = this; // Asignar la ventana actual
+    public VentanaSeleccionarEntradas(JFrame vi,JFrame vI, int numeroPersonas, BBDD bd, int id_sala, String titulo, Cliente c, String horario, Cartelera cartelera) {
+        vNueva = vI;
+        vAnterior = vi;
+        vActual = this;
 
         pagina = new JTabbedPane();
 
         for (int i = 1; i <= numeroPersonas; i++) {
-            nombre = new JLabel("Nombre:");
+            JLabel nombre = new JLabel("Nombre:");
             nombre.setHorizontalAlignment(SwingConstants.LEFT);
-            apellido1 = new JLabel("Primer Apellido:");
+            JLabel apellido1 = new JLabel("Primer Apellido:");
             apellido1.setHorizontalAlignment(SwingConstants.LEFT);
-            apellido2 = new JLabel("Segundo Apellido:");
+            JLabel apellido2 = new JLabel("Segundo Apellido:");
             apellido2.setHorizontalAlignment(SwingConstants.LEFT);
-            edadLabel = new JLabel("Edad: 0");
+            JLabel edadLabel = new JLabel("Edad: 0");
             edadLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-            nom = new JTextField();
-            ap1 = new JTextField();
-            ap2 = new JTextField();
+            JTextField nom = new JTextField();
+            JTextField ap1 = new JTextField();
+            JTextField ap2 = new JTextField();
             nom.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             ap1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             ap2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-            edad = new JSlider(0, 100, 25);
+            JButton btnelegirbutaca = new JButton("Elegir Butaca");
+            int personaIndex = i - 1;
+            btnelegirbutaca.addActionListener(e -> {
+                if (butacasSeleccionadas.size() > personaIndex && butacasSeleccionadas.get(personaIndex) != null) {
+                    Butaca butacaPrevia = butacasSeleccionadas.get(personaIndex);
+                    bd.CancelaReservaButaca(butacaPrevia, horario);
+                }
+
+                new Ventana_elegirbutaca(vActual, bd, id_sala, butacaSeleccionada -> {
+                    if (butacasSeleccionadas.size() > personaIndex) {
+                        butacasSeleccionadas.set(personaIndex, butacaSeleccionada);
+                    } else {
+                        butacasSeleccionadas.add(personaIndex,butacaSeleccionada);
+                    }
+                },horario, cartelera);
+            });
+
+            JSlider edad = new JSlider(0, 100, 0);
             edad.setPaintTicks(true);
             edad.setPaintLabels(true);
             edad.setMajorTickSpacing(20);
             edad.setMinorTickSpacing(5);
 
-            Runnable edadUpdater = () -> {
-                while (true) {
-                    edadLabel.setText("Edad: " + edad.getValue());
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-            edadThread = new Thread(edadUpdater);
-            edadThread.start();
+            edad.addChangeListener(cl -> {
+                edadLabel.setText("Edad: " + edad.getValue());
+            });
 
             JPanel panelCliente = new JPanel(new BorderLayout());
-            JPanel datos = new JPanel(new GridLayout(8, 1, 10, 10));
+            JPanel datos = new JPanel(new GridLayout(9, 1, 10, 10));
             datos.setBorder(new EmptyBorder(10, 10, 10, 10));
             datos.add(nombre);
             datos.add(nom);
@@ -79,6 +96,7 @@ public class VentanaSeleccionarEntradas extends JFrame {
             datos.add(ap2);
             datos.add(edadLabel);
             datos.add(edad);
+            datos.add(btnelegirbutaca);
 
             panelCliente.add(new JPanel(), BorderLayout.EAST);
             panelCliente.add(new JPanel(), BorderLayout.WEST);
@@ -89,8 +107,47 @@ public class VentanaSeleccionarEntradas extends JFrame {
 
         JButton btnAceptar = new JButton("Aceptar");
         btnAceptar.addActionListener(e -> {
-        	vNueva.setEnabled(true);
-            vActual.dispose(); // Desactivar la ventana actual
+            boolean valido = true;
+            for (int i = 0; i < pagina.getTabCount(); i++) {
+                JPanel panelCliente = (JPanel) pagina.getComponentAt(i);
+                JPanel datos = (JPanel) panelCliente.getComponent(2);
+
+                JTextField nom = (JTextField) datos.getComponent(1);
+                JTextField ap1 = (JTextField) datos.getComponent(3);
+                JTextField ap2 = (JTextField) datos.getComponent(5);
+                JSlider edad = (JSlider) datos.getComponent(7);
+
+                if (nom.getText().isEmpty() || ap1.getText().isEmpty() || ap2.getText().isEmpty() || edad.getValue() < 3) {
+                    valido = false;
+                }
+            }
+
+            if (valido) {
+                Pelicula p = bd.obtenerPeliculaportitulo(titulo);
+                if (p == null) {
+                    System.out.println("Error: La película con el título '" + titulo + "' no se ha encontrado.");
+                    return;  
+                }
+                if (c.getCarrito_de_compra().isEmpty()) {
+                    bd.meterCarrito(c.getDni());
+				}
+
+                int id_peli = p.getId();
+                for (Butaca butaca : butacasSeleccionadas) {
+                    if (butaca != null) {
+                    	int id_carrito = bd.obtenerIdcarritopordni(c.getDni());
+                        bd.meterEntrada(butaca.getId(), id_peli, horario, id_carrito);
+                    }
+                }
+                c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
+                vAnterior.setEnabled(true);
+                vAnterior.setVisible(true);
+                vNueva.setVisible(false);
+                vActual.dispose();
+            } else {
+            	JOptionPane.showMessageDialog(null, "No puedes dejar ningun parametro sin rellenar y la edad minima es de 3 años", "Texto vacio", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         });
 
         JPanel panelSur = new JPanel();

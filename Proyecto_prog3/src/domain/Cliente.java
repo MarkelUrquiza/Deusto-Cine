@@ -1,7 +1,9 @@
 package domain;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -90,7 +92,6 @@ public class Cliente{
 	public void setCarrito_de_compra(HashMap<Entrada, Integer> carrito_de_compra) {
 		this.carrito_de_compra = carrito_de_compra;
 	}
-	
 	public HashMap<Entrada, Integer> cargarEntradas() {
 		HashMap<Entrada, Integer> entradas = new HashMap<Entrada, Integer>();
 		File f = new File("resource/data/Entrada.txt");
@@ -108,7 +109,7 @@ public class Cliente{
 				boolean vip = Boolean.valueOf(campos[5]);
 				String hora = campos[6];
 				
-				Butaca butaca = new Butaca(fila, Columna.values()[column], vip, true, id_sala);
+				Butaca butaca = new Butaca(fila, Columna.values()[column], vip,  id_sala);
 				Entrada entrada = new Entrada(butaca, id_peli, titulo, id_sala,10,hora);
 
 				
@@ -121,5 +122,4 @@ public class Cliente{
 		}
 		return entradas;
 	}
-	
 }

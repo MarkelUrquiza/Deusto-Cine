@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,7 +19,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 import db.BBDD;
 import domain.Butaca;
@@ -37,7 +35,7 @@ public class Ventana_carrito extends JFrame{
 	private JLabel titulo,filtro;
 	private JButton btncartelera,btnañadir,btncomprar;
 	private JTable tablacarrito;
-	private DefaultTableModel modelocarrito;
+	private ModeloCarrito modelocarrito;
 	private JScrollPane scrollTabla;
 	private JFrame vActual, vInicial;
 	public Ventana_carrito(Cliente c, JFrame vI, Cartelera cartelera, BBDD bd){
@@ -69,7 +67,7 @@ public class Ventana_carrito extends JFrame{
 		});
 		btnañadir = new JButton("Añadir al carro");
 		btnañadir.addActionListener((e)-> {
-			new Aniadir_carrito(vI,cartelera,null);
+			new Aniadir_carrito(vI,cartelera,null,bd, c);
 			vActual.setVisible(false);
 		});
 		btncartelera = new JButton("Ver cartelera");
@@ -78,7 +76,7 @@ public class Ventana_carrito extends JFrame{
 			vActual.setVisible(false);
 		});
 		
-		modelocarrito = new DefaultTableModel();		
+		modelocarrito = new ModeloCarrito(c.getCarrito_de_compra());		
 		tablacarrito = new JTable(modelocarrito);
 		
 		tablacarrito.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -102,10 +100,10 @@ public class Ventana_carrito extends JFrame{
 		scrollTabla.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollTabla.setBorder(new TitledBorder("Entradas"));
 		
-		String [] titulos = {"PELICULA","SALA","FILA BUTACA","COLUMNA BUTACA","BUTACA VIP","FECHA","PRECIO","NUMERO DE ENTRADAS"};
-		modelocarrito.setColumnIdentifiers(titulos);
+		//String [] titulos = {"PELICULA","SALA","FILA BUTACA","COLUMNA BUTACA","BUTACA VIP","FECHA","PRECIO","NUMERO DE ENTRADAS"};
+		//modelocarrito.setColumnIdentifiers(titulos);
 		
-		cargarTablaCarrito(c, bd);	
+		//cargarTablaCarrito(c, bd);	
 		tablacarrito.setFillsViewportHeight(true);
 		tablacarrito.getTableHeader().setReorderingAllowed(false);
 		
@@ -124,19 +122,23 @@ public class Ventana_carrito extends JFrame{
 			
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				filtrar(c);
+				if (combo.getSelectedItem() != null) {
+					filtrar(c);
+				}
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				filtrar(c);
+				if (combo.getSelectedItem() != null) {
+					filtrar(c);
+				}
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				filtrar(c);
+				if (combo.getSelectedItem() != null) {
+					filtrar(c);
+				}
 			}
 		});
 		
@@ -163,13 +165,13 @@ public class Ventana_carrito extends JFrame{
 		if (c.getCarrito_de_compra()!=null) {
 			modelocarrito.setRowCount(0);
 			for (Entrada entrada: c.getCarrito_de_compra().keySet()) {
-				int id_butaca = bd.obtenerButacaporIddeEntrada(entrada.getId());
+				int id_butaca = bd.obtenerIDButacaporIddeEntrada(entrada.getId());
 				Butaca butaca = bd.obtenerButacaporId(id_butaca);
 				if (butaca.isVip()) {
-					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),10,c.getCarrito_de_compra().get(entrada)};
+					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
 					modelocarrito.addRow(fila);
 				} else {
-					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",entrada.getHorario(),10,c.getCarrito_de_compra().get(entrada)};
+					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
 					modelocarrito.addRow(fila);
 				}
 				
@@ -188,10 +190,10 @@ public class Ventana_carrito extends JFrame{
 							Butaca butaca = entrada.getAsiento();
 							boolean vip = butaca.isVip();
 							if (vip) {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",c.getCarrito_de_compra().get(entrada)};
+								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
 								modelocarrito.addRow(fila);
 							} else {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",c.getCarrito_de_compra().get(entrada)};
+								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
 								modelocarrito.addRow(fila);
 							}
 						}				

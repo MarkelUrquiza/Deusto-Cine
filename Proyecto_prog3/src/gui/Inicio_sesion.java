@@ -85,16 +85,17 @@ public class Inicio_sesion extends JFrame {
             } else {
                 if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
                 	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
-                	c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
+                	if (c.getCarrito_de_compra() == null ) {
+                	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
+                	}
                     dispose();
-                	JOptionPane.showConfirmDialog(null, "Bienvenido a nuestro cine "+nom.getText(), "Bienvenido", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                	JOptionPane.showConfirmDialog(null, "Bienvenido a nuestro cine "+ nom.getText(), "Bienvenido", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
                 	new Ventana_inicial(cartelera, c, bd);
 
                 }
             }
         });
 
-        // Configurar fuentes y bordes
         Font fuente = new Font(getName(), Font.BOLD, 16);
         nombre.setFont(fuente);
         contrasenia.setFont(fuente);

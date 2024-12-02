@@ -10,16 +10,12 @@ public class Pelicula {
 	private String rutafoto;
 	private boolean tresd;	
 	private String horarios;
-	
-	public Pelicula() {
-		super();
-		this.id = cont;
-		cont++;
-	}
+	private int id_sala;
 
-	public Pelicula(String titulo, Genero tipo, float duracion, String director, String rutafoto, boolean tresd, String horarios) {
+	public Pelicula(int id_sala,String titulo, Genero tipo, float duracion, String director, String rutafoto, boolean tresd, String horarios) {
 		super();
 		this.id = cont;
+		this.id_sala = id_sala;
 		this.titulo = titulo;
 		this.tipo = tipo;
 		this.duracion = duracion;
@@ -28,6 +24,18 @@ public class Pelicula {
 		this.tresd = tresd;
 		this.horarios = horarios;
 		cont++;
+	}
+	public Pelicula(int id,int id_sala,String titulo, Genero tipo, float duracion, String director, String rutafoto, boolean tresd, String horarios) {
+		super();
+		this.id = id;
+		this.id_sala = id_sala;
+		this.titulo = titulo;
+		this.tipo = tipo;
+		this.duracion = duracion;
+		this.director = director;
+		this.rutafoto = rutafoto;
+		this.tresd = tresd;
+		this.horarios = horarios;
 	}
 
 	public boolean isTresd() {
@@ -102,7 +110,19 @@ public class Pelicula {
 		this.horarios = horarios;
 	}
 
-	
-	
+	public int getId_sala() {
+		return id_sala;
+	}
+
+	public void setId_sala(int id_sala) {
+		this.id_sala = id_sala;
+	}
+
+	@Override
+	public String toString() {
+		return "Pelicula [id=" + id + ", titulo=" + titulo + ", director=" + director + ", tipo=" + tipo + ", duracion="
+				+ duracion + ", rutafoto=" + rutafoto + ", tresd=" + tresd + ", horarios=" + horarios + ", id_sala="
+				+ id_sala + "]";
+	}
 
 }

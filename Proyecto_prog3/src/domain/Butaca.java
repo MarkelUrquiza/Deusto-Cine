@@ -1,23 +1,35 @@
 package domain;
 
-public class Butaca implements Reservable{
+public class Butaca{
 	private static int cont = 1;
 	private int id;
 	private int fila;
 	private Columna columna;
 	private boolean vip;
-	private boolean estado;
 	private int id_sala;
 
 	
-	public Butaca(int fila, Columna columna, boolean vip, boolean estado, int id_sala) {
+	public Butaca(int fila, Columna columna, boolean vip, int id_sala) {
 		super();
 		this.id = cont;
 		cont ++;
 		this.fila = fila;
 		this.columna = columna;
 		this.vip = vip;
-		this.estado = estado;
+		this.id_sala = id_sala;
+	}
+	public Butaca(int fila, Columna columna, boolean vip, int id_sala, String paradiferenciar) {
+		this.fila = fila;
+		this.columna = columna;
+		this.vip = vip;
+		this.id_sala = id_sala;
+	}
+	public Butaca(int id,int fila, Columna columna, boolean vip, int id_sala) {
+		super();
+		this.id = id;
+		this.fila = fila;
+		this.columna = columna;
+		this.vip = vip;
 		this.id_sala = id_sala;
 	}
 	
@@ -59,27 +71,11 @@ public class Butaca implements Reservable{
 
 
 
-	public boolean isEstado() {
-		return estado;
-	}
-
-
-
-	public void setEstado(boolean estado) {
-		this.estado = estado;
-	}
-
 
 	@Override
-	public boolean cancelar_reserva() {
-		
-		return false;		
-	}
-
-	@Override
-	public boolean reservar() {
-		
-		return false;
+	public String toString() {
+		return "Butaca [id=" + id + ", fila=" + fila + ", columna=" + columna + ", vip=" + vip 
+				+ ", id_sala=" + id_sala + "]";
 	}
 	
 	

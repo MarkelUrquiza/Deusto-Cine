@@ -1,6 +1,7 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import db.BBDD;
 
@@ -22,10 +23,17 @@ public class Cartelera {
 		ArrayList<Sala> cartel = new ArrayList<Sala>();
 		for (int i = 0; i < 4; i++) {
 			Sala sala = new Sala();
-			sala.setButacas((ArrayList<Butaca>) bd.getButacas(i+1));
-			sala.setHorarios(bd.getPeliculas(i));
+			
+			sala.setHorarios(bd.getPeliculas(i+1));
+			HashMap<String, ArrayList<Butaca>> butacas = new HashMap<>();
+			for (String h: sala.getHorarios().keySet()) {
+				butacas.put(h, (ArrayList<Butaca>) bd.getButacas(i+1,h));
+				
+			}
+			sala.setButacas(butacas);
+			
 			//sala.cargarPelis();
-			cartel.add(sala);
+			cartel.addLast(sala);
 		}
 		return cartel;
 		

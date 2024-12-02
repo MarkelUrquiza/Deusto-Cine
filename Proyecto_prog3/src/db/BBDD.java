@@ -15,6 +15,7 @@ import java.util.Scanner;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import domain.Butaca;
+import domain.ButacaHorario;
 import domain.Cliente;
 import domain.Columna;
 import domain.Entrada;
@@ -84,157 +85,137 @@ public class BBDD {
 			}
 		}
 	}*/
-	public void crearBBDD() {
-	    if (properties.get("createBBDD").equals("true")) {
-	        String sql1 = "CREATE TABLE IF NOT EXISTS Cliente (\n"
-	                + " dni TEXT PRIMARY KEY,\n"
-	                + " username TEXT NOT NULL,\n"
-	                + " contrasenia TEXT NOT NULL,\n"
-	                + " nombre TEXT NOT NULL,\n"
-	                + " apellidos TEXT NOT NULL,\n"
-	                + " correo TEXT NOT NULL\n);";
 
-	        String sql2 = "CREATE TABLE IF NOT EXISTS Pelicula (\n"
-	                + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-	                + " id_sala INTEGER NOT NULL,\n"
-	                + " titulo TEXT UNIQUE NOT NULL,\n"
-	                + " director TEXT NOT NULL,\n"
-	                + " tipo TEXT NOT NULL,\n"
-	                + " duracion FLOAT NOT NULL,\n"
-	                + " rutafoto TEXT NOT NULL,\n"
-	                + " horarios TEXT NOT NULL,\n"
-	                + " tresd INTEGER NOT NULL\n);";
+    public void crearBBDD() {
+        if (properties.get("createBBDD").equals("true")) {
+            String sql1 = "CREATE TABLE IF NOT EXISTS Cliente (\n"
+                    + " dni TEXT PRIMARY KEY,\n"
+                    + " username TEXT NOT NULL,\n"
+                    + " contrasenia TEXT NOT NULL,\n"
+                    + " nombre TEXT NOT NULL,\n"
+                    + " apellidos TEXT NOT NULL,\n"
+                    + " correo TEXT NOT NULL\n);";
 
-	        String sql3 = "CREATE TABLE IF NOT EXISTS Entrada (\n"
-	                + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-	                + " id_butaca INTEGER NOT NULL,\n"
-	                + " id_peli INTEGER NOT NULL,\n"
-	                + " horario STRING NOT NULL,\n"
-	                + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE,\n"
-	                + " FOREIGN KEY(id_peli) REFERENCES Pelicula(id) ON DELETE CASCADE\n);";
+            String sql2 = "CREATE TABLE IF NOT EXISTS Pelicula (\n"
+                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " id_sala INTEGER NOT NULL,\n"
+                    + " titulo TEXT UNIQUE NOT NULL,\n"
+                    + " director TEXT NOT NULL,\n"
+                    + " tipo TEXT NOT NULL,\n"
+                    + " duracion FLOAT NOT NULL,\n"
+                    + " rutafoto TEXT NOT NULL,\n"
+                    + " horarios TEXT NOT NULL,\n"
+                    + " tresd INTEGER NOT NULL\n);";
 
-	        String sql4 = "CREATE TABLE IF NOT EXISTS Carrito (\n"
-	                + " cliente_dni TEXT,\n"
-	                + " entrada_id INTEGER,\n"
-	                + " numero_entradas INTEGER NOT NULL DEFAULT 0,\n"
-	                + " PRIMARY KEY(cliente_dni, entrada_id),\n"
-	                + " FOREIGN KEY(cliente_dni) REFERENCES Cliente(dni) ON DELETE CASCADE,\n"
-	                + " FOREIGN KEY(entrada_id) REFERENCES Entrada(id) ON DELETE CASCADE\n);";
-	        
-	        String sql5 = "CREATE TABLE IF NOT EXISTS Butaca (\n"
-	                + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-	                + " fila INTEGER NOT NULL,\n"
-	                + " columna INTEGER NOT NULL,\n"
-	                + " vip INTEGER NOT NULL,\n"
-	                + " estado INTEGER NOT NULL,"
-	                + " id_sala INTEGER NOT NULL\n);";
+            String sql3 = "CREATE TABLE IF NOT EXISTS Entrada (\n"
+                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " id_butaca INTEGER NOT NULL,\n"
+                    + " id_carrito INTEGER NOT NULL,\n"
+                    + " id_peli INTEGER NOT NULL,\n"
+                    + " horario STRING NOT NULL,\n"
+                    + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE,\n"
+                    + " FOREIGN KEY(id_carrito) REFERENCES Carrito(id) ON DELETE CASCADE,\n"
+                    + " FOREIGN KEY(id_peli) REFERENCES Pelicula(id) ON DELETE CASCADE\n"
+                    + " UNIQUE(id_butaca, id_carrito, id_peli, horario));";
 
-	        try (Connection con = DriverManager.getConnection(connectionString);
-	             PreparedStatement pStmt1 = con.prepareStatement(sql1);
-	             PreparedStatement pStmt2 = con.prepareStatement(sql2);
-	             PreparedStatement pStmt3 = con.prepareStatement(sql3);
-	             PreparedStatement pStmt4 = con.prepareStatement(sql4);
-	        	 PreparedStatement pStmt5 = con.prepareStatement(sql5)) {
+            String sql4 = "CREATE TABLE IF NOT EXISTS Carrito (\n"
+                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " cliente_dni TEXT,\n"
+                    + " UNIQUE(cliente_dni),\n"
+                    + " FOREIGN KEY(cliente_dni) REFERENCES Cliente(dni) ON DELETE CASCADE\n);";
+            
+            String sql5 = "CREATE TABLE IF NOT EXISTS Butaca (\n"
+                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " fila INTEGER NOT NULL,\n"
+                    + " columna INTEGER NOT NULL,\n"
+                    + " vip INTEGER NOT NULL,\n"
+                    + " id_sala INTEGER NOT NULL\n);";
+            
+            String sql6 = "CREATE TABLE IF NOT EXISTS Butaca_Horario (\n"
+                    + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                    + " id_butaca INTEGER NOT NULL,\n"
+                    + " estado INTEGER NOT NULL,\n"
+                    + " horario STRING NOT NULL,\n"
+                    + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE);";
+            
+            
+            try (Connection con = DriverManager.getConnection(connectionString);
+                 PreparedStatement pStmt1 = con.prepareStatement(sql1);
+                 PreparedStatement pStmt2 = con.prepareStatement(sql2);
+                 PreparedStatement pStmt3 = con.prepareStatement(sql3);
+                 PreparedStatement pStmt4 = con.prepareStatement(sql4);
+            	 PreparedStatement pStmt5 = con.prepareStatement(sql5);
+            	 PreparedStatement pStmt6 = con.prepareStatement(sql6)) {
+            	
+                if (!pStmt1.execute()) logger.info("Tabla Cliente creada o ya existía.");
+                if (!pStmt2.execute()) logger.info("Tabla Pelicula creada o ya existía.");
+                if (!pStmt3.execute()) logger.info("Tabla Entrada creada o ya existía.");
+                if (!pStmt4.execute()) logger.info("Tabla Carrito creada o ya existía.");
+                if (!pStmt5.execute()) logger.info("Tabla Butaca creada o ya existía.");
+                if (!pStmt6.execute()) logger.info("Tabla ButacaHorario creada o ya existía.");
 
-	        	if (!pStmt1.execute()) logger.info("Tabla Cliente creada o ya existía.");
-	        	if (!pStmt2.execute()) logger.info("Tabla Pelicula creada o ya existía.");
-	        	if (!pStmt3.execute()) logger.info("Tabla Entrada creada o ya existía.");
-	        	if (!pStmt4.execute()) logger.info("Tabla Carrito creada o ya existía.");
-	        	if (!pStmt5.execute()) logger.info("Tabla Butaca creada o ya existía.");
+            } catch (Exception e) {
+                logger.warning(String.format("Error al crear las tablas: %s", e.getMessage()));
+            }
+        }
+    }
 
-	        } catch (Exception e) {
-	            logger.warning(String.format("Error al crear las tablas: %s", e.getMessage()));
-	        }
-	    }
-	}
-	public void insertardatosporDefecto() {
-	    if (properties.get("createBBDD").equals("true")) {
-	        String insertCliente = "INSERT OR IGNORE INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo) VALUES\n"
-	                + "('11111111A', 'user1', 'pass1', 'John', 'Doe', 'john.doe@example.com'),\n"
-	                + "('22222222B', 'user2', 'pass2', 'Jane', 'Doe', 'jane.doe@example.com'),\n"
-	                + "('33333333C', 'user3', 'pass3', 'Alice', 'Smith', 'alice.smith@example.com'),\n"
-	                + "('44444444D', 'user4', 'pass4', 'Bob', 'Johnson', 'bob.johnson@example.com'),\n"
-	                + "('55555555E', 'user5', 'pass5', 'Charlie', 'Brown', 'charlie.brown@example.com'),\n"
-	                + "('66666666F', 'user6', 'pass6', 'Eve', 'Davis', 'eve.davis@example.com'),\n"
-	                + "('77777777G', 'user7', 'pass7', 'Frank', 'Miller', 'frank.miller@example.com'),\n"
-	                + "('88888888H', 'user8', 'pass8', 'Grace', 'Lee', 'grace.lee@example.com'),\n"
-	                + "('99999999I', 'user9', 'pass9', 'Hank', 'Wilson', 'hank.wilson@example.com'),\n"
-	                + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com');";
+    public void insertardatosporDefecto() {
+        if (properties.get("createBBDD").equals("true")) {
+            String insertCliente = "INSERT OR IGNORE INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo) VALUES\n"
+                    + "('11111111A', 'user1', 'pass1', 'John', 'Doe', 'john.doe@example.com'),\n"
+                    + "('22222222B', 'user2', 'pass2', 'Jane', 'Doe', 'jane.doe@example.com'),\n"
+                    + "('33333333C', 'user3', 'pass3', 'Alice', 'Smith', 'alice.smith@example.com'),\n"
+                    + "('44444444D', 'user4', 'pass4', 'Bob', 'Johnson', 'bob.johnson@example.com'),\n"
+                    + "('55555555E', 'user5', 'pass5', 'Charlie', 'Brown', 'charlie.brown@example.com'),\n"
+                    + "('66666666F', 'user6', 'pass6', 'Eve', 'Davis', 'eve.davis@example.com'),\n"
+                    + "('77777777G', 'user7', 'pass7', 'Frank', 'Miller', 'frank.miller@example.com'),\n"
+                    + "('88888888H', 'user8', 'pass8', 'Grace', 'Lee', 'grace.lee@example.com'),\n"
+                    + "('99999999I', 'user9', 'pass9', 'Hank', 'Wilson', 'hank.wilson@example.com'),\n"
+                    + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com');";
 
-	        StringBuilder insertPelicula = new StringBuilder("INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES ");
-	        insertPelicula.append("(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/cine.jpg', '2024-10-11 16:00,2024-10-11 18:00', 1),")
-	                .append("(2, 'The Godfather', 'Francis Ford Coppola', 'DRAMA', 2.9, 'resource/images/cine.jpg', '2024-10-11 17:00,2024-10-11 19:00', 0),")
-	                .append("(3, 'Dune', 'Denis Villeneuve', 'CIENCIA_FICCION', 2.8, 'resource/images/cine.jpg', '2024-10-11 16:00,2024-10-11 18:00', 1),")
-	                .append("(1, 'Interstellar', 'Christopher Nolan', 'CIENCIA_FICCION', 3.0, 'resource/images/cine.jpg', '2024-10-12 20:00,2024-10-12 22:00', 1),")
-	                .append("(2, 'Titanic', 'James Cameron', 'ROMANCE', 3.2, 'resource/images/cine.jpg', '2024-10-12 20:00,2024-10-13 22:00', 0),")
-	                .append("(3, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/cine.jpg', '2024-10-12 14:00,2024-10-12 16:00', 0),")
-	                .append("(4, 'The Matrix', 'The Wachowskis', 'ACCION', 2.7, 'resource/images/cine.jpg', '2024-10-11 16:00,2024-10-11 18:00', 1),")
-	                .append("(1, 'The Dark Knight', 'Christopher Nolan', 'ACCION', 2.7, 'resource/images/cine.jpg', '2024-10-13 16:00,2024-10-13 18:00', 1),")
-	                .append("(4, 'Spirited Away', 'Hayao Miyazaki', 'ANIMACION', 2.1, 'resource/images/cine.jpg', '2024-10-12 14:00,2024-10-12 16:00', 0),")
-	                .append("(2, 'Forrest Gump', 'Robert Zemeckis', 'DRAMA', 2.4, 'resource/images/cine.jpg', '2024-10-13 18:00,2024-10-13 20:00', 0),")
-	                .append("(3, 'Avatar', 'James Cameron', 'CIENCIA_FICCION', 2.9, 'resource/images/cine.jpg', '2024-10-12 18:00,2024-10-12 20:00', 1),")
-	                .append("(4, 'Coco', 'Lee Unkrich', 'ANIMACION', 2.0, 'resource/images/cine.jpg', '2024-10-13 10:00,2024-10-13 12:00', 0),")
-	                .append("(2, 'La La Land', 'Damien Chazelle', 'MUSICAL', 2.3, 'resource/images/cine.jpg', '2024-10-12 16:00,2024-10-12 18:00', 0),")
-	                .append("(3, 'Gladiator', 'Ridley Scott', 'ACCION', 2.6, 'resource/images/cine.jpg', '2024-10-13 14:00,2024-10-13 16:00', 0);");
+            String insertPelicula = "INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES\n"
+                    + "(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/cine.jpg', '2024-10-11 16:00,2024-10-11 18:00', 1),\n"
+                    + "(2, 'The Godfather', 'Francis Ford Coppola', 'DRAMA', 2.9, 'resource/images/cine.jpg', '2024-10-11 17:00,2024-10-11 19:00', 0),\n"
+                    + "(3, 'Dune', 'Denis Villeneuve', 'CIENCIA_FICCION', 2.8, 'resource/images/cine.jpg', '2024-10-12 20:00,2024-10-12 22:00', 1),\n"
+                    + "(4, 'Interstellar', 'Christopher Nolan', 'CIENCIA_FICCION', 3.0, 'resource/images/cine.jpg', '2024-10-13 14:00,2024-10-13 16:00', 1),\n"
+                    + "(1, 'Titanic', 'James Cameron', 'ROMANCE', 3.2, 'resource/images/cine.jpg', '2024-10-14 18:00,2024-10-14 20:00', 0),\n"
+                    + "(2, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/cine.jpg', '2024-10-15 16:00,2024-10-15 18:00', 0),\n"
+                    + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/cine.jpg', '2024-10-16 20:00,2024-10-16 22:30', 1),\n"
+                    + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/cine.jpg', '2024-10-17 16:00,2024-10-17 18:30', 1);";
 
-	        String insertEntrada = "INSERT OR IGNORE INTO Entrada (id_butaca, id_peli, horario) VALUES\n"
-	                + "(1, 1, '2024-10-11 16:00'),\n"
-	                + "(2, 1, '2024-10-11 18:00'),\n"
-	                + "(3, 4, '2024-10-12 20:00'),\n"
-	                + "(4, 4, '2024-10-12 22:00'),\n"
-	                + "(5, 8, '2024-10-13 16:00'),\n"
-	                + "(6, 8, '2024-10-13 18:00'),\n"
-	                + "(7, 2, '2024-10-11 17:00'),\n"
-	                + "(8, 2, '2024-10-11 19:00'),\n"
-	                + "(9, 5, '2024-10-12 20:00'),\n"
-	                + "(10, 5, '2024-10-13 22:00'),\n"
-	                + "(11, 10, '2024-10-13 18:00'),\n"
-	                + "(12, 14, '2024-10-12 16:00'),\n"
-	                + "(13, 3, '2024-10-11 16:00'),\n"
-	                + "(14, 3, '2024-10-11 18:00'),\n"
-	                + "(15, 6, '2024-10-12 14:00'),\n"
-	                + "(16, 6, '2024-10-12 16:00'),\n"
-	                + "(17, 12, '2024-10-12 18:00'),\n"
-	                + "(18, 12, '2024-10-12 20:00'),\n"
-	                + "(19, 15, '2024-10-13 14:00'),\n"
-	                + "(20, 15, '2024-10-13 16:00');";
+            String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
+                    + "('11111111A'),\n"
+                    + "('22222222B'),\n"
+                    + "('33333333C'),\n"
+                    + "('44444444D');";
 
-	        String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni, entrada_id, numero_entradas) VALUES\n"
-	                + "('11111111A', 1, 1),\n"
-	                + "('22222222B', 2, 1),\n"
-	                + "('33333333C', 3, 1),\n"
-	                + "('44444444D', 4, 1),\n"
-	                + "('55555555E', 5, 1),\n"
-	                + "('66666666F', 6, 1),\n"
-	                + "('77777777G', 7, 1),\n"
-	                + "('88888888H', 8, 1),\n"
-	                + "('99999999I', 9, 1),\n"
-	                + "('00000000J', 10, 1),\n"
-	                + "('11111111A', 11, 1),\n"
-	                + "('22222222B', 12, 1),\n"
-	                + "('33333333C', 13, 1),\n"
-	                + "('44444444D', 14, 1),\n"
-	                + "('55555555E', 15, 1),\n"
-	                + "('66666666F', 16, 1),\n"
-	                + "('77777777G', 17, 1),\n"
-	                + "('88888888H', 18, 1),\n"
-	                + "('99999999I', 19, 1),\n"
-	                + "('00000000J', 20, 1);";
+            String insertEntrada = "INSERT OR IGNORE INTO Entrada (id_butaca, id_carrito, id_peli, horario) VALUES\n"
+                    + "(1, 1, 1, '2024-10-11 16:00'),\n"
+                    + "(2, 1, 2, '2024-10-11 17:00'),\n"
+                    + "(3, 2, 3, '2024-10-12 20:00'),\n"
+                    + "(4, 2, 4, '2024-10-13 14:00'),\n"
+                    + "(5, 2, 5, '2024-10-14 18:00'),\n"
+                    + "(6, 3, 6, '2024-10-15 16:00'),\n"
+                    + "(7, 3, 7, '2024-10-16 20:00'),\n"
+                    + "(8, 3, 8, '2024-10-17 16:00'),\n"
+                    + "(9, 4, 8, '2024-10-17 16:00'),\n"
+                    + "(10, 4, 1, '2024-10-11 18:00');";
 
-	        try (Connection con = DriverManager.getConnection(connectionString);
-	             PreparedStatement insertStmt1 = con.prepareStatement(insertCliente);
-	             PreparedStatement insertStmt2 = con.prepareStatement(insertPelicula.toString());
-	             PreparedStatement insertStmt3 = con.prepareStatement(insertEntrada);
-	             PreparedStatement insertStmt4 = con.prepareStatement(insertCarrito)) {
+            try (Connection con = DriverManager.getConnection(connectionString);
+                 PreparedStatement insertStmt1 = con.prepareStatement(insertCliente);
+                 PreparedStatement insertStmt2 = con.prepareStatement(insertPelicula);
+                 PreparedStatement insertStmt3 = con.prepareStatement(insertCarrito);
+                 PreparedStatement insertStmt4 = con.prepareStatement(insertEntrada)) {
 
-	            if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute()) {
-	                logger.info("Se han insertado los datos correctamente");
-	            }
-	        } catch (Exception e) {
-	            logger.warning(String.format("Error al insertar los datos: %s", e.getMessage()));
-	        }
-	    }
-	}
+                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute()) {
+                    logger.info("Se han insertado los datos correctamente.");
+                }
+            } catch (Exception e) {
+                logger.warning(String.format("Error al insertar los datos: %s", e.getMessage()));
+            }
+        }
+    }
 
 	public boolean existeUsuario(String username, String dni, String correo) {
 		boolean existe = false;
@@ -326,65 +307,66 @@ public class BBDD {
 		return c;
 	}
 	public HashMap<Entrada, Integer> cargarCarrito(String dni) {
-		HashMap<Entrada, Integer> carrito = new HashMap<>();
-		String sql = "SELECT * FROM Carrito WHERE cliente_dni = ?";
-		
-		try (Connection con = DriverManager.getConnection(connectionString);
-		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
-			pStmt.setString(1, dni);
-			ResultSet rs = pStmt.executeQuery();			
-			Entrada entrada;
-			boolean enc = false;
-			while (rs.next()) {
-				entrada = obtenerEntradaPorID(rs.getInt("entrada_id"));
-				for(Entrada e: carrito.keySet()) {
-					if (e.equals(entrada)) {
-						enc = true;
-					}
-				}
-				if (!enc) {
-					carrito.put(entrada, rs.getInt("numero_entradas"));
-				}
-			}
-			
-			rs.close();
-			
-			logger.info(String.format("Se ha cargado el carrito del usuario con DNI: %s",dni));			
-		} catch (Exception e) {
-			logger.warning(String.format("Error recuperar los comics: %s", e.getMessage()));						
-		}		
-		
-		return carrito;
-	}
-	public Entrada obtenerEntradaPorID(int id) {
-		Entrada e = null;
-		String sql = "SELECT * FROM Entrada WHERE id = ?";
-		
-		try (Connection con = DriverManager.getConnection(connectionString);
-		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
-			
-			pStmt.setInt(1, id);
-			ResultSet rs = pStmt.executeQuery();			
+	    HashMap<Entrada, Integer> carrito = new HashMap<>();
+	    String sql = "SELECT * FROM Carrito WHERE cliente_dni = ?";
 
-			if (rs.next()) {
-				Pelicula p = obtenerPeliculaporID(id);
-				e = new Entrada(obtenerButacaporId(id), p.getId(),p.getTitulo() , id, id, rs.getString("horario"));
-			}
-			
-			rs.close();
-			
-			logger.info(String.format("Se ha encontrado correctamente la entrada con id: %s", e.getId()));			
-		} catch (Exception exception) {
-			logger.warning(String.format("Error al encontrar la entrada con id: %s", e.getId()));						
-		}		
-		
-		return e;
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setString(1, dni);
+	        ResultSet rs = pStmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            int idCarrito = rs.getInt("id");
+	            List<Entrada> entradas = obtenerEntradaPorIDCarrito(idCarrito);
+
+	            for (Entrada entrada : entradas) {
+	                carrito.put(entrada, numeroEntradas(dni, entrada.getTitulo_peli(), entrada.getHorario()));
+	            }
+	        }
+	        rs.close();
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al cargar el carrito del cliente con DNI: %s. Detalles: %s", dni, e.getMessage()));
+	    }
+
+	    return carrito;
 	}
+
+	public List<Entrada> obtenerEntradaPorIDCarrito(int id_carrito) {
+	    String sql = "SELECT * FROM Entrada WHERE id_carrito = ?";
+	    Entrada e = null; 
+	    List<Entrada> entradas = new ArrayList<>();
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        
+	        pStmt.setInt(1, id_carrito);
+	        ResultSet rs = pStmt.executeQuery();
+	        
+	        while (rs.next()) {
+	            int idButaca = rs.getInt("id_butaca");
+	            int idPelicula = rs.getInt("id_peli");
+	            String horario = rs.getString("horario");
+	            
+	            Butaca butaca = obtenerButacaporId(idButaca);
+	            Pelicula pelicula = obtenerPeliculaporID(idPelicula);
+	            
+	            e = new Entrada(butaca, pelicula.getId(), pelicula.getTitulo(), pelicula.getId_sala(), 10, horario);
+	            entradas.add(e);
+	            
+	        }
+            logger.info(String.format("Se ha encontrado correctamente la entrada"));
+	        rs.close();
+	    } catch (Exception exception) {
+	        logger.warning(String.format("Error al encontrar la entrada. Detalles: %s", exception.getMessage()));
+	    }
+	    
+	    return entradas;
+	}
+
+	
 	public Butaca obtenerButacaporId(int id) {
 		
 		String sql = "SELECT * FROM Butaca WHERE id = ?";
 		Butaca b = null;
-		//Se abre la conexión y se crea el PreparedStatement con la sentencia SQL
 		try (Connection con = DriverManager.getConnection(connectionString);
 		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
 			
@@ -392,14 +374,11 @@ public class BBDD {
 			ResultSet rs = pStmt.executeQuery();			
 
 			if (rs.next()) {
-				boolean vip,estado;
+				boolean vip;
 				if (rs.getInt("vip") == 1) {
 					vip = true;
 				} else vip = false;
-				if (rs.getInt("estado") == 1) {
-					estado = true;
-				} else {estado = false;}
-				b = new Butaca(rs.getInt("fila"), Columna.valueOf(rs.getString("columna")) , vip, estado , rs.getInt("id_sala"));
+				b = new Butaca(rs.getInt("id"),rs.getInt("fila"), Columna.valueOf(rs.getString("columna")) , vip , rs.getInt("id_sala"));
 			}
 			
 			rs.close();
@@ -413,38 +392,52 @@ public class BBDD {
 	}
 
 	public Pelicula obtenerPeliculaporID(int id) {
-		Pelicula p = null;
-		String sql = "SELECT * FROM Pelicula WHERE id = ?";
-		
-		//Se abre la conexión y se crea el PreparedStatement con la sentencia SQL
-		try (Connection con = DriverManager.getConnection(connectionString);
-		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
-			
-			pStmt.setInt(1, id);
-			ResultSet rs = pStmt.executeQuery();			
+	    Pelicula p = null;
+	    String sql = "SELECT * FROM Pelicula WHERE id = ?";
+	    
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        
+	        pStmt.setInt(1, id);
+	        ResultSet rs = pStmt.executeQuery();
 
-			if (rs.next()) {
-				boolean tresd;
-				if (rs.getInt("tresd") == 1) {
-					tresd = true;
-				} else {
-					tresd = false;
-				}
-				p = new Pelicula(rs.getString("titulo"), Genero.valueOf(rs.getString("tipo")), 
-						rs.getFloat("duracion"), rs.getString("director"), 
-						rs.getString("rutafoto"), tresd, rs.getString("horarios"));
-			}
-			
-			rs.close();
-			
-			logger.info(String.format("Se ha encontrado correctamente la Butaca con id: %d", id));			
-		} catch (Exception e) {
-			logger.warning(String.format("Error al encontrar la Butaca con id: %d", id));						
-		}		
-		
-		return p;
+	        if (rs.next()) {
+	            boolean tresd = rs.getInt("tresd") == 1;
+	            Genero genero = null;
+	            try {
+	                genero = Genero.valueOf(rs.getString("tipo").toUpperCase());
+	            } catch (IllegalArgumentException e) {
+	                logger.warning(String.format("Valor desconocido para Genero: %s", rs.getString("tipo")));
+	            }
+
+	            p = new Pelicula(
+	            	rs.getInt("id"),
+	                rs.getInt("id_sala"),
+	                rs.getString("titulo"),
+	                genero,
+	                rs.getFloat("duracion"),
+	                rs.getString("director"),
+	                rs.getString("rutafoto"),
+	                tresd,
+	                rs.getString("horarios")
+	            );
+	        } else {
+	            logger.warning(String.format("No se encontró la película con id: %d", id));
+	        }
+
+	        rs.close();
+
+	        logger.info(String.format("Se ha encontrado correctamente la Pelicula con id: %d", id));
+	    } catch (Exception e) {
+	        e.printStackTrace();  
+	        logger.warning(String.format("Error al encontrar la Pelicula con id: %d", id));
+	    }
+
+	    return p;
 	}
-	public int obtenerButacaporIddeEntrada(int id) {
+
+
+	public int obtenerIDButacaporIddeEntrada(int id) {
 		String sql = "SELECT * FROM Entrada WHERE id = ?";
 		int id_butaca = 0;
 		try (Connection con = DriverManager.getConnection(connectionString);
@@ -474,15 +467,12 @@ public class BBDD {
 		}
 	}
 	public void borrarDatosDeButaca() {
-		//Sólo se borran los datos si la propiedad cleanBBDD es true
 		if (properties.get("cleanButacas").equals("true")) {	
 			String sql1 = "DELETE FROM Butaca;";
 			
-	        //Se abre la conexión y se crea un PreparedStatement para borrar los datos de cada tabla
 			try (Connection con = DriverManager.getConnection(connectionString);
 			     PreparedStatement pStmt1 = con.prepareStatement(sql1)) {
 				
-				//Se ejecutan las sentencias de borrado de las tablas
 		        if (!pStmt1.execute()) {
 		        	logger.info("Se han borrado las Butacas");
 		        }
@@ -505,11 +495,9 @@ public class BBDD {
 	            int fila = Integer.parseInt(campos[0]);
 	            Columna columna = Columna.valueOf(campos[1]);
 	            boolean vip = Boolean.parseBoolean(campos[2]);
-	            boolean estado = Boolean.parseBoolean(campos[3]);
 	            int idSala = Integer.parseInt(campos[4]);
 	            
-	            // Crear la butaca y añadirla a la lista
-	            Butaca butaca = new Butaca(fila, columna, vip, estado, idSala);
+	            Butaca butaca = new Butaca(fila, columna, vip, idSala);
 	            butacas.add(butaca);
 	        }
 	        
@@ -521,24 +509,20 @@ public class BBDD {
 	    return butacas;
 	}
 	public void meterButaca(Butaca b) {
-		String sql = "INSERT INTO Butaca (id, fila, columna, vip, estado, id_sala) VALUES (?, ?, ?, ?, ?, ?);";
+		String sql = "INSERT INTO Butaca (id, fila, columna, vip, id_sala) VALUES (?, ?, ?, ?, ?);";
 		
 		try (Connection con = DriverManager.getConnection(connectionString);
 			 PreparedStatement Stmt = con.prepareStatement(sql)) {
-			int estado,vip;
+			int vip;
 			if (b.isVip()) {
 				vip = 1;
-			} else vip = 0; 
-			if (b.isEstado()) {
-				estado = 1;
-			} else estado = 0;
+			} else vip = 0;
 			
 				Stmt.setInt(1, b.getId());
 				Stmt.setInt(2, b.getFila());
 				Stmt.setString(3, b.getColumna().toString());
 				Stmt.setInt(4, vip);
-				Stmt.setInt(5, estado);
-				Stmt.setInt(6, b.getId_sala());
+				Stmt.setInt(5, b.getId_sala());
 				
 				
 				if (!Stmt.execute()) {
@@ -550,7 +534,8 @@ public class BBDD {
 		}			
 		
 	}
-	public List<Butaca> getButacas(int id_sala) {
+	
+	public List<Butaca> getButacas(int id_sala, String horario) {
 		List<Butaca> butacas = new ArrayList<>();
 		String sql = "SELECT * FROM Butaca WHERE id_sala = ?";
 		
@@ -560,16 +545,18 @@ public class BBDD {
 			
 			ResultSet rs = pStmt.executeQuery();
 			Butaca b;
+			ButacaHorario bh;
 			
 			while (rs.next()) {
 				boolean vip,estado;
 				if (rs.getInt("vip") == 1) {
 					vip = true;
 				} else vip = false;
-				if (rs.getInt("estado") == 1) {
+				if (existeButacaHorario(rs.getInt("id"), horario)) {
 					estado = true;
 				} else {estado = false;}
-				b = new Butaca(rs.getInt("fila"), Columna.valueOf(rs.getString("columna")) , vip, estado , rs.getInt("id_sala"));
+				b = new Butaca(rs.getInt("id"),rs.getInt("fila"), Columna.valueOf(rs.getString("columna")) , vip , rs.getInt("id_sala"));
+				bh = new ButacaHorario(rs.getInt("id"), horario);
 				butacas.add(b);
 			}
 			
@@ -581,6 +568,25 @@ public class BBDD {
 		}		
 		
 		return butacas;
+	}
+	public boolean existeButacaHorario(int id_butaca, String horario) {
+		boolean existe = false;
+		String sql = "SELECT * FROM Butaca_Horario WHERE id_butaca = ? and horario = ?";
+	    try (Connection con = DriverManager.getConnection(connectionString);
+				PreparedStatement ps = con.prepareStatement(sql)){
+
+			ps.setInt(1, id_butaca);
+			ps.setString(2, horario);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) { 
+				existe = true;
+			}
+			rs.close();
+			ps.close();
+		} catch (Exception e) {
+		    logger.warning(String.format("Error al buscar el usuario y contraseña: %s", e.getMessage()));
+		}
+		return existe;
 	}
 	public HashMap<String, Pelicula> getPeliculas(int id_sala) {
 		HashMap<String, Pelicula> horarios = new HashMap<>();
@@ -600,12 +606,13 @@ public class BBDD {
 				} else {
 					tresd = false;
 				}
-				p = new Pelicula(rs.getString("titulo"), Genero.valueOf(rs.getString("tipo")), 
+				int id_peli = obtenerIdPeliculaPorTitulo(rs.getString("titulo"));
+				p = new Pelicula(id_peli,rs.getInt("id_sala"),rs.getString("titulo"), Genero.valueOf(rs.getString("tipo")), 
 						rs.getFloat("duracion"), rs.getString("director"), 
 						rs.getString("rutafoto"), tresd, rs.getString("horarios"));
 				String[] campos = rs.getString("horarios").split(",");
 	            for (String h : campos) { 
-	                if (!horarios.containsKey(h)) { // Evitar sobrescribir horarios existentes
+	                if (!horarios.containsKey(h)) {
 	                    horarios.put(h, p);
 	                }
 	            }
@@ -614,13 +621,209 @@ public class BBDD {
 			
 			rs.close();
 			
-			logger.info(String.format("Se ha obtenido la lista de butacas."));			
+			logger.info(String.format("Se ha obtenido los horarios."));			
 		} catch (Exception ex) {
-			logger.warning(String.format("Error al obtener la lista de butacas: %s", ex.getMessage()));						
+			logger.warning(String.format("Error al obtener los horarios: %s", ex.getMessage()));						
 		}		
 		
 		return horarios;
 	}
-	
+	public void reservarButaca(Butaca b ,String horario) {
+		String sql = "INSERT INTO Butaca_Horario (id_butaca,estado,horario) VALUES (?,?,?)\n";
+		
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement pStmt = con.prepareStatement(sql)) {
+
+			pStmt.setInt(1, b.getId());
+			pStmt.setInt(2, 1);
+			pStmt.setString(3, horario);
+
+			if (pStmt.executeUpdate() != 1) {					
+				logger.warning(String.format("No se ha podido actualizar la Butaca con id: %d", b.getId()));
+			} else {					
+				logger.info(String.format("Se ha actualizado la Butaca con id: %d", b.getId()));
+			}			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al actualizar la Butaca con id: %d", b.getId()));
+		}				
+	}
+	public void CancelaReservaButaca(Butaca b,String horario) {
+		String sql = "DELETE FROM Butaca_Horario WHERE id_butaca = ? and horario = ?;";
+		
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement pStmt = con.prepareStatement(sql)) {
+
+			pStmt.setInt(1, b.getId());
+			pStmt.setString(2, horario);
+				
+			if (pStmt.executeUpdate() != 1) {					
+				logger.warning(String.format("No se ha podido actualizar la Butaca con id: %d", b.getId()));
+			} else {					
+				logger.info(String.format("Se ha actualizado la Butaca con id: %d", b.getId()));
+			}			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al actualizar la Butaca con id: %d", b.getId()));
+		}				
+	}
+	public Pelicula obtenerPeliculaportitulo(String titulo) {
+		Pelicula p = null;
+		String sql = "SELECT * FROM Pelicula WHERE titulo = ?";
+		
+		try (Connection con = DriverManager.getConnection(connectionString);
+		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
+			
+			pStmt.setString(1, titulo);
+			ResultSet rs = pStmt.executeQuery();			
+
+			if (rs.next()) {
+				boolean tresd;
+				if (rs.getInt("tresd") == 1) {
+					tresd = true;
+				} else {
+					tresd = false;
+				}
+				int id_peli = obtenerIdPeliculaPorTitulo(titulo);
+				p = new Pelicula(id_peli,rs.getInt("id_sala"),rs.getString("titulo"), Genero.valueOf(rs.getString("tipo")), 
+						rs.getFloat("duracion"), rs.getString("director"), 
+						rs.getString("rutafoto"), tresd, rs.getString("horarios"));
+			}
+			
+			rs.close();
+			
+			logger.info(String.format("Se ha encontrado correctamente la pelicula con titulo: %s", titulo));			
+		} catch (Exception e) {
+			logger.warning(String.format("Error al encontrar la pelicula con titulo: %s", titulo));						
+		}		
+		
+		return p;
+	}
+	public void meterEntrada(int id_butaca, int id_peli, String horario, int id_carrito) {
+		String sql = "INSERT INTO Entrada (id_butaca, id_carrito, id_peli, horario) VALUES (?,?,?,?)\n";
+		
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement Stmt = con.prepareStatement(sql)) {
+			Stmt.setInt(1, id_butaca);
+			Stmt.setInt(2, id_carrito);
+			Stmt.setInt(3, id_peli);
+			Stmt.setString(4, horario);
+			
+			if (!Stmt.execute()) {
+				logger.info(String.format("Entrada insertada en la BBDD"));
+		    }
+			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al insertar nueva entrada: %s", ex.getMessage()));
+		}			
+		
+	}
+	public void meterCarrito(String dni) {
+		String sql = "INSERT INTO Carrito (cliente_dni) VALUES (?)\n";
+		
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement Stmt = con.prepareStatement(sql)) {
+			Stmt.setString(1, dni);
+			
+			if (!Stmt.execute()) {
+				logger.info(String.format("Carrito insertado en la BBDD"));
+		    }
+			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al insertar nuevo Carrito: %s", ex.getMessage()));
+		}			
+		
+	}
+	public int obtenerIdcarritopordni(String dni) {
+	    String sql = "SELECT id FROM Carrito WHERE cliente_dni = ?";
+	    int id_carrito = 0;
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setString(1, dni);
+	        try (ResultSet rs = pStmt.executeQuery()) {
+	            if (rs.next()) { 
+	                id_carrito = rs.getInt("id");
+	                logger.info(String.format("Se ha encontrado correctamente el Carrito con id: %d", id_carrito));
+	            } else {
+	                logger.warning(String.format("No se encontró un carrito asociado al dni: %s", dni));
+	            }
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al encontrar el Carrito para el dni %s: %s", dni, e.getMessage()));
+	    }
+	    return id_carrito;
+	}
+	public int numeroEntradas(String dni, String titulo, String horario) {
+	    int totalEntradas = 0;
+	    try (Connection con = DriverManager.getConnection(connectionString)) {
+	        // Obtén el ID del carrito asociado al cliente
+	        int idCarrito = obtenerIdCarritoPorDni(dni);
+	        if (idCarrito != 0) {
+	            // Obtén el ID de la película con el título dado
+	            int idPelicula = obtenerIdPeliculaPorTitulo(titulo);
+	            if (idPelicula != 0) {
+	                // Contar las entradas en la BD que coincidan con los criterios
+	                totalEntradas = contarEntradas(idCarrito, idPelicula, horario);
+	            } else {
+	                logger.warning(String.format("No se encontró una película con el título: %s", titulo));
+	            }
+	        } else {
+	            logger.warning(String.format("No se encontró un carrito para el cliente con DNI: %s", dni));
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al obtener el número de entradas: %s", e.getMessage()));
+	    }
+	    return totalEntradas;
+	}
+	public int obtenerIdCarritoPorDni(String dni) {
+	    int idCarrito = 0;
+	    String sql = "SELECT id FROM Carrito WHERE cliente_dni = ?";
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setString(1, dni);
+	        ResultSet rs = pStmt.executeQuery();
+	        if (rs.next()) {
+	            idCarrito = rs.getInt("id");
+	        }
+	        rs.close();
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al obtener el ID del carrito para el cliente con DNI: %s. Detalles: %s", dni, e.getMessage()));
+	    }
+	    return idCarrito;
+	}
+	public int obtenerIdPeliculaPorTitulo(String titulo) {
+	    int idPelicula = 0;
+	    String sql = "SELECT id FROM Pelicula WHERE titulo = ?";
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setString(1, titulo);
+	        ResultSet rs = pStmt.executeQuery();
+	        if (rs.next()) {
+	            idPelicula = rs.getInt("id");
+	        }
+	        rs.close();
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al obtener el ID de la película con título: %s. Detalles: %s", titulo, e.getMessage()));
+	    }
+	    return idPelicula;
+	}
+	public int contarEntradas(int idCarrito, int idPelicula, String horario) {
+	    int cantidad = 0;
+	    String sql = "SELECT COUNT(*) AS total FROM Entrada WHERE id_carrito = ? AND id_peli = ? AND horario = ?";
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setInt(1, idCarrito);
+	        pStmt.setInt(2, idPelicula);
+	        pStmt.setString(3, horario);
+	        ResultSet rs = pStmt.executeQuery();
+	        if (rs.next()) {
+	            cantidad = rs.getInt("total");
+	        }
+	        rs.close();
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al contar entradas para carrito: %d, película: %d, horario: %s. Detalles: %s",
+	                                     idCarrito, idPelicula, horario, e.getMessage()));
+	    }
+	    return cantidad;
+	}
+
 
 }
