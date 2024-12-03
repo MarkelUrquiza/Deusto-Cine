@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,15 +56,19 @@ public class Ventana_carrito extends JFrame{
 		
 		String [] combotitles = {"NOMBRE DE PELICULA","SALA","FECHA","PRECIO"};
 		combo = new JComboBox<String>(combotitles);
-		combo.setSelectedItem(null);
+		combo.setSelectedItem(combotitles[0]);
 		
 		btncomprar = new JButton("Comprar");
 		btncomprar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				vActual.setEnabled(false);
-				new VentanaAceptarCompra(c,vActual);		
+				bd.comprarCarrito3(c.getDni());
+				c.setCarrito_de_compra(new HashMap<Entrada, Integer>());
+				modelocarrito = new ModeloCarrito(c.getCarrito_de_compra());		
+				tablacarrito = new JTable(modelocarrito);
+				dispose();
+				vInicial.setVisible(true);
 			}
 		});
 		btnañadir = new JButton("Añadir al carro");
@@ -75,8 +81,9 @@ public class Ventana_carrito extends JFrame{
 			vInicial.setVisible(true);
 			vActual.setVisible(false);
 		});
-		
-		modelocarrito = new ModeloCarrito(c.getCarrito_de_compra());		
+		HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
+
+		modelocarrito = new ModeloCarrito(carrito);		
 		tablacarrito = new JTable(modelocarrito);
 		
 		tablacarrito.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -181,49 +188,78 @@ public class Ventana_carrito extends JFrame{
 	}
 	
 	public void filtrar(Cliente c) {
-		if (c.getCarrito_de_compra()!=null) {
+		HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
+
+		if (carrito!=null) {
 			if (combo.getSelectedItem().toString()!=null) {
 				if (combo.getSelectedItem().toString().equals("NOMBRE DE PELICULA")) {
-					modelocarrito.setRowCount(0);
-					for (Entrada entrada: c.getCarrito_de_compra().keySet()) {
+					HashMap<Entrada, Integer> carritoNP = new HashMap<Entrada, Integer>();
+					for(Entrada entrada: carrito.keySet()) {
 						if (entrada.getTitulo_peli().contains(filtrar.getText())) {
-							Butaca butaca = entrada.getAsiento();
-							boolean vip = butaca.isVip();
-							if (vip) {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
-								modelocarrito.addRow(fila);
-							} else {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
-								modelocarrito.addRow(fila);
-							}
-						}				
-					}	
-				} 
-				else if(combo.getSelectedItem().toString().equals("SALA")) {
-					modelocarrito.setRowCount(0);
-					for (Entrada entrada: c.getCarrito_de_compra().keySet()) {
-						if (String.valueOf(entrada.getSala()).contains(filtrar.getText())) {
-							Butaca butaca = entrada.getAsiento();
-							boolean vip = butaca.isVip();
-							if (vip) {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",c.getCarrito_de_compra().get(entrada)};
-								modelocarrito.addRow(fila);
-							} else {
-								Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",c.getCarrito_de_compra().get(entrada)};
-								modelocarrito.addRow(fila);
-							}
-						}				
-					}	
+							carritoNP.put(entrada, carrito.get(entrada));
+						}
+					}
+					modelocarrito = new ModeloCarrito(carritoNP);		
+					tablacarrito = new JTable(modelocarrito);
+		            tablacarrito.revalidate();
+		            tablacarrito.repaint();
 				}
-				else if(combo.getSelectedItem().toString().equals("FECHA")) {
-					
+				else if (combo.getSelectedItem().toString().equals("SALA")) {
+					HashMap<Entrada, Integer> carritoS = new HashMap<Entrada, Integer>();
+					for(Entrada entrada: carrito.keySet()) {
+						if (entrada.getSala() == Integer.parseInt(filtrar.getText())) {
+							carritoS.put(entrada, carrito.get(entrada));
+						}
+					}
+					modelocarrito = new ModeloCarrito(carritoS);		
+					tablacarrito = new JTable(modelocarrito);
+		            tablacarrito.revalidate();
+		            tablacarrito.repaint();
+				}
+				else if (combo.getSelectedItem().toString().equals("PRECIO")) {
+					HashMap<Entrada, Integer> carritoP = new HashMap<Entrada, Integer>();
+					for(Entrada entrada: carrito.keySet()) {
+						if (entrada.getPrecio() == Integer.parseInt(filtrar.getText())) {
+							carritoP.put(entrada, carrito.get(entrada));
+						}
+					}
+					modelocarrito = new ModeloCarrito(carritoP);		
+					tablacarrito = new JTable(modelocarrito);
+		            tablacarrito.revalidate();
+		            tablacarrito.repaint();
 				}
 				else {
-					
+					HashMap<Entrada, Integer> carritoF = new HashMap<Entrada, Integer>();
+					for(Entrada entrada: carrito.keySet()) {
+						if (entrada.getHorario().equals(filtrar.getText())) {
+							carritoF.put(entrada, carrito.get(entrada));
+						}
+					}
+					modelocarrito = new ModeloCarrito(carritoF);		
+					tablacarrito = new JTable(modelocarrito);
+		            tablacarrito.revalidate();
+		            tablacarrito.repaint();
 				}
 			}
-			
 		}
 	}	
+	public HashMap<Entrada, Integer> filtrarEntradasUnicas(HashMap<Entrada, Integer> carrito) {
+	    HashMap<String, Entrada> uniqueEntriesMap = new HashMap<>();
+	    HashMap<Entrada, Integer> filteredCarrito = new HashMap<>();
+
+	    for (Entrada e : carrito.keySet()) {
+	        Integer cantidad = carrito.get(e);
+
+	        String claveUnica = e.getSala() + "_" + e.getHorario() + "_" + e.getHorario();
+
+	        if (!uniqueEntriesMap.containsKey(claveUnica)) {
+	            uniqueEntriesMap.put(claveUnica, e);
+	            filteredCarrito.put(e, cantidad);
+	        }
+	    }
+
+	    return filteredCarrito;
+	}
+
 
 }

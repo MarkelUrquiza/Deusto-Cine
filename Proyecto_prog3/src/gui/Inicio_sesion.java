@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -89,7 +90,36 @@ public class Inicio_sesion extends JFrame {
                 	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
                 	}
                     dispose();
-                	JOptionPane.showConfirmDialog(null, "Bienvenido a nuestro cine "+ nom.getText(), "Bienvenido", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    JProgressBar progressBar = new JProgressBar(0, 100);
+                    progressBar.setValue(0);
+                    progressBar.setStringPainted(true);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BorderLayout());
+                    panel.add(progressBar, BorderLayout.CENTER);
+
+                    JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                    JDialog dialog = optionPane.createDialog("Cargando...");
+                    dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                    
+                    new Thread(() -> {
+                        int progress = 0;
+                        try {
+                            while (progress <= 100) {
+                                progressBar.setValue(progress);
+                                Thread.sleep(30);
+                                progress += 1;
+                            }
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        } finally {
+                            dialog.dispose();
+                        }
+                    }).start();
+
+                    dialog.setVisible(true);
+                
+            
                 	new Ventana_inicial(cartelera, c, bd);
 
                 }

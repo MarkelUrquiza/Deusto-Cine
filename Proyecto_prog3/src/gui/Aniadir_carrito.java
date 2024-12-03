@@ -23,6 +23,7 @@ import javax.swing.event.ListSelectionListener;
 import db.BBDD;
 import domain.Cartelera;
 import domain.Cliente;
+import domain.Entrada;
 import domain.Pelicula;
 import domain.Sala;
 
@@ -102,14 +103,23 @@ public class Aniadir_carrito extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object resultado = JOptionPane.showInputDialog(null, "Cuantas entradas quieres aniadir?", "Numero de entradas", 
-						JOptionPane.QUESTION_MESSAGE, null, new Object[] {1,2,3,4}, 1);
-				if (resultado != null) {
-					String value = listapelis.getSelectedValue();
-					Pelicula p = bd.obtenerPeliculaportitulo(value);
-					new VentanaSeleccionarEntradas(vI,vActual,Integer.parseInt(resultado.toString()),bd,p.getId_sala(),p.getTitulo(),c,horarios.getSelectedItem().toString(),cartelera);
-					vActual.setEnabled(false);
-				}								
+				String value = listapelis.getSelectedValue();
+				Pelicula p = bd.obtenerPeliculaportitulo(value);
+				if (comprobarLimiteEntradas(c, p.getId_sala(), p.getTitulo())) {
+					Object resultado = JOptionPane.showInputDialog(null, "Cuantas entradas quieres aniadir?", "Numero de entradas", 
+							JOptionPane.QUESTION_MESSAGE, null, new Object[] {1,2,3,4}, 1);
+					if (resultado != null && comprobarLimiteEntradas2(c, p.getId_sala(), p.getTitulo(), (int) resultado) == true) {
+						new VentanaSeleccionarEntradas(vI,vActual,Integer.parseInt(resultado.toString()),bd,p.getId_sala(),p.getTitulo(),c,horarios.getSelectedItem().toString(),cartelera);
+						vActual.setEnabled(false);
+					} else {
+							JOptionPane.showConfirmDialog(null, "No puedes comprar mas de 4 entradas con esta cuenta, consulta tu carrito y veras cuantas puedes reservar", 
+									"No mas entradas", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+						}
+				} else {
+					JOptionPane.showConfirmDialog(null, "No puedes comprar mas de 4 entradas con esta cuenta, consulta tu carrito y veras cuantas puedes reservar", 
+							"No mas entradas", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+				}
+								
 			}
 		});
 		btncancelar = new JButton("Cancelar");
@@ -216,6 +226,31 @@ public class Aniadir_carrito extends JFrame {
 		}
 		
 	}
+	public boolean comprobarLimiteEntradas(Cliente c,int id_sala, String titulo) {
+	    int contador = 0;
 
+	    for (Entrada e : c.getCarrito_de_compra().keySet()) {
+
+	        if (e.getSala()  == id_sala && e.getTitulo_peli().equals(titulo) && e.getHorario().equals(horarios.getSelectedItem().toString())) {
+	            
+	            contador = c.getCarrito_de_compra().get(e);
+	        }
+	    }
+
+	    return (contador) < 5;
+	}
+	public boolean comprobarLimiteEntradas2(Cliente c,int id_sala, String titulo, int numerodeentradasameter) {
+	    int contador = 0;
+
+	    for (Entrada e : c.getCarrito_de_compra().keySet()) {
+
+	        if (e.getSala()  == id_sala && e.getTitulo_peli().equals(titulo) && e.getHorario().equals(horarios.getSelectedItem().toString())) {
+	            
+	            contador = c.getCarrito_de_compra().get(e);
+	        }
+	    }
+
+	    return (contador + numerodeentradasameter) < 5;
+	}
 	
 }

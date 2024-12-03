@@ -136,8 +136,8 @@ public class BBDD {
                     + " id_butaca INTEGER NOT NULL,\n"
                     + " estado INTEGER NOT NULL,\n"
                     + " horario STRING NOT NULL,\n"
+                    + " UNIQUE(id_butaca),\n"
                     + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE);";
-            
             
             try (Connection con = DriverManager.getConnection(connectionString);
                  PreparedStatement pStmt1 = con.prepareStatement(sql1);
@@ -175,14 +175,14 @@ public class BBDD {
                     + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com');";
 
             String insertPelicula = "INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES\n"
-                    + "(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/cine.jpg', '2024-10-11 16:00,2024-10-11 18:00', 1),\n"
-                    + "(2, 'The Godfather', 'Francis Ford Coppola', 'DRAMA', 2.9, 'resource/images/cine.jpg', '2024-10-11 17:00,2024-10-11 19:00', 0),\n"
-                    + "(3, 'Dune', 'Denis Villeneuve', 'CIENCIA_FICCION', 2.8, 'resource/images/cine.jpg', '2024-10-12 20:00,2024-10-12 22:00', 1),\n"
-                    + "(4, 'Interstellar', 'Christopher Nolan', 'CIENCIA_FICCION', 3.0, 'resource/images/cine.jpg', '2024-10-13 14:00,2024-10-13 16:00', 1),\n"
-                    + "(1, 'Titanic', 'James Cameron', 'ROMANCE', 3.2, 'resource/images/cine.jpg', '2024-10-14 18:00,2024-10-14 20:00', 0),\n"
-                    + "(2, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/cine.jpg', '2024-10-15 16:00,2024-10-15 18:00', 0),\n"
-                    + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/cine.jpg', '2024-10-16 20:00,2024-10-16 22:30', 1),\n"
-                    + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/cine.jpg', '2024-10-17 16:00,2024-10-17 18:30', 1);";
+                    + "(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/Inception.png', '2024-10-11 16:00,2024-10-11 18:00', 1),\n"
+                    + "(2, 'The Godfather', 'Francis Ford Coppola', 'DRAMA', 2.9, 'resource/images/TheGodfather.png', '2024-10-11 17:00,2024-10-11 19:00', 0),\n"
+                    + "(3, 'Dune', 'Denis Villeneuve', 'CIENCIA_FICCION', 2.8, 'resource/images/Dune.png', '2024-10-12 20:00,2024-10-12 22:00', 1),\n"
+                    + "(4, 'Interstellar', 'Christopher Nolan', 'CIENCIA_FICCION', 3.0, 'resource/images/Interstellar.png', '2024-10-13 14:00,2024-10-13 16:00', 1),\n"
+                    + "(1, 'Titanic', 'James Cameron', 'ROMANCE', 3.2, 'resource/images/Titanic.png', '2024-10-14 18:00,2024-10-14 20:00', 0),\n"
+                    + "(2, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/PulpFiction.png', '2024-10-15 16:00,2024-10-15 18:00', 0),\n"
+                    + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/AvengersEndgame.png', '2024-10-16 20:00,2024-10-16 22:30', 1),\n"
+                    + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/TheMatrix.png', '2024-10-17 16:00,2024-10-17 18:30', 1);";
 
             String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
                     + "('11111111A'),\n"
@@ -201,14 +201,27 @@ public class BBDD {
                     + "(8, 3, 8, '2024-10-17 16:00'),\n"
                     + "(9, 4, 8, '2024-10-17 16:00'),\n"
                     + "(10, 4, 1, '2024-10-11 18:00');";
+            
+            String insertButacaHorario = "INSERT OR IGNORE INTO Butaca_Horario (id_butaca, estado, horario) VALUES\n"
+            		+ "(1, 1, '2024-10-11 16:00'),\n"
+            		+ "(2, 1, '2024-10-11 17:00'),\n"
+            		+ "(3, 1, '2024-10-12 20:00'),\n"
+            		+ "(4, 1, '2024-10-13 14:00'),\n"
+            		+ "(5, 1, '2024-10-14 18:00'),\n"
+            		+ "(6, 1, '2024-10-15 16:00'),\n"
+            		+ "(7, 1, '2024-10-16 20:00'),\n"
+            		+ "(8, 1, '2024-10-17 16:00'),\n"
+            		+ "(9, 1, '2024-10-17 16:00'),\n"
+            		+ "(10, 1, '2024-10-11 18:00');";
 
             try (Connection con = DriverManager.getConnection(connectionString);
                  PreparedStatement insertStmt1 = con.prepareStatement(insertCliente);
                  PreparedStatement insertStmt2 = con.prepareStatement(insertPelicula);
                  PreparedStatement insertStmt3 = con.prepareStatement(insertCarrito);
-                 PreparedStatement insertStmt4 = con.prepareStatement(insertEntrada)) {
+                 PreparedStatement insertStmt4 = con.prepareStatement(insertEntrada);
+            	 PreparedStatement insertStmt5 = con.prepareStatement(insertButacaHorario);) {
 
-                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute()) {
+                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute() && !insertStmt5.execute()) {
                     logger.info("Se han insertado los datos correctamente.");
                 }
             } catch (Exception e) {
@@ -545,18 +558,13 @@ public class BBDD {
 			
 			ResultSet rs = pStmt.executeQuery();
 			Butaca b;
-			ButacaHorario bh;
 			
 			while (rs.next()) {
-				boolean vip,estado;
+				boolean vip;
 				if (rs.getInt("vip") == 1) {
 					vip = true;
 				} else vip = false;
-				if (existeButacaHorario(rs.getInt("id"), horario)) {
-					estado = true;
-				} else {estado = false;}
 				b = new Butaca(rs.getInt("id"),rs.getInt("fila"), Columna.valueOf(rs.getString("columna")) , vip , rs.getInt("id_sala"));
-				bh = new ButacaHorario(rs.getInt("id"), horario);
 				butacas.add(b);
 			}
 			
@@ -824,6 +832,81 @@ public class BBDD {
 	    }
 	    return cantidad;
 	}
+	public void comprarCarrito(String dni) {
+		if (properties.get("cleanButacas").equals("true")) {	
+			String sql1 = "DELETE FROM Carrito WHERE cliente_dni = ?;";
+			
+			try (Connection con = DriverManager.getConnection(connectionString);
+			     PreparedStatement pStmt1 = con.prepareStatement(sql1)) {
+				pStmt1.setString(1, dni);
+		        if (!pStmt1.execute()) {
+		        	logger.info("Se han comprado las entradas");
+		        }
+			} catch (Exception ex) {
+				logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
+			}
+		}
+	}
+	public void comprarCarrito2(String dni) {
+	    String sql1 = "DELETE FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
+	    String sql2 = "DELETE FROM Carrito WHERE cliente_dni = ?;";
+	    
+	    try (Connection con = DriverManager.getConnection(connectionString)) {
+	        con.setAutoCommit(false);
 
+	        try (PreparedStatement pStmt1 = con.prepareStatement(sql1);
+	             PreparedStatement pStmt2 = con.prepareStatement(sql2)) {
+
+	            pStmt1.setString(1, dni);
+	            int entradasEliminadas = pStmt1.executeUpdate();
+	            logger.info(String.format("%d entradas eliminadas", entradasEliminadas));
+
+	            pStmt2.setString(1, dni);
+	            int carritosEliminados = pStmt2.executeUpdate();
+	            logger.info(String.format("%d carritos eliminados", carritosEliminados));
+
+	            con.commit();
+	        } catch (Exception e) {
+	            con.rollback();
+	            throw e;
+	        }
+	    } catch (Exception ex) {
+	        logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
+	    }
+	}
+	public void comprarCarrito3(String dni) {
+	    String sql1 = "DELETE FROM Butaca_Horario WHERE id_butaca IN ("
+	                + "SELECT id_butaca FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?));";
+	    String sql2 = "DELETE FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
+	    String sql3 = "DELETE FROM Carrito WHERE cliente_dni = ?;";
+	    
+	    try (Connection con = DriverManager.getConnection(connectionString)) {
+	        con.setAutoCommit(false);
+
+	        try (PreparedStatement pStmt1 = con.prepareStatement(sql1);
+	             PreparedStatement pStmt2 = con.prepareStatement(sql2);
+	             PreparedStatement pStmt3 = con.prepareStatement(sql3)) {
+
+	            pStmt1.setString(1, dni);
+	            int butacasHorarioEliminadas = pStmt1.executeUpdate();
+	            logger.info(String.format("%d butacas_horario eliminadas", butacasHorarioEliminadas));
+
+	            pStmt2.setString(1, dni);
+	            int entradasEliminadas = pStmt2.executeUpdate();
+	            logger.info(String.format("%d entradas eliminadas", entradasEliminadas));
+
+	            pStmt3.setString(1, dni);
+	            int carritosEliminados = pStmt3.executeUpdate();
+	            logger.info(String.format("%d carritos eliminados", carritosEliminados));
+
+	            con.commit();
+	        } catch (Exception e) {
+	            con.rollback();
+	            throw e;
+	        }
+	    } catch (Exception ex) {
+	        logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
+	    }
+	}
 
 }
