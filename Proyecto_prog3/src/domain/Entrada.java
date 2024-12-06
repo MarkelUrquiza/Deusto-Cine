@@ -9,6 +9,9 @@ public class Entrada {
 	private String titulo_peli;
 	private String horario;
 	private float precio;
+	private String nombre;
+	private String apellido;
+	private int edad;
 	
 	public Entrada(Butaca asiento, int id_peli, String titulo_peli, int sala, float precio, String horario) {
 		super();
@@ -73,13 +76,12 @@ public class Entrada {
 		return id_peli;
 	}
 
+
 	@Override
 	public String toString() {
 		return "Entrada [id=" + id + ", asiento=" + asiento + ", sala=" + sala + ", id_peli=" + id_peli
-				+ ", titulo_peli=" + titulo_peli + ", horario=" + horario + ", precio=" + precio + "]";
+				+ ", titulo_peli=" + titulo_peli + ", horario=" + horario + ", precio=" + precio + ", nombre=" + nombre
+				+ ", apellido=" + apellido + ", edad=" + edad + "]";
 	}
-
-	
-	
 	
 }

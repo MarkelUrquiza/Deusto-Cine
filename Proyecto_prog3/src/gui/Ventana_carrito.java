@@ -7,7 +7,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,7 +20,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import db.BBDD;
 import domain.Butaca;
 import domain.Cartelera;
@@ -87,7 +85,8 @@ public class Ventana_carrito extends JFrame{
 		tablacarrito = new JTable(modelocarrito);
 		
 		tablacarrito.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-			
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
@@ -199,47 +198,36 @@ public class Ventana_carrito extends JFrame{
 							carritoNP.put(entrada, carrito.get(entrada));
 						}
 					}
-					modelocarrito = new ModeloCarrito(carritoNP);		
-					tablacarrito = new JTable(modelocarrito);
-		            tablacarrito.revalidate();
-		            tablacarrito.repaint();
+					modelocarrito = new ModeloCarrito(carritoNP);
 				}
 				else if (combo.getSelectedItem().toString().equals("SALA")) {
 					HashMap<Entrada, Integer> carritoS = new HashMap<Entrada, Integer>();
 					for(Entrada entrada: carrito.keySet()) {
-						if (entrada.getSala() == Integer.parseInt(filtrar.getText())) {
+						if (Integer.toString(entrada.getSala()).contains(filtrar.getText())) {
 							carritoS.put(entrada, carrito.get(entrada));
 						}
 					}
-					modelocarrito = new ModeloCarrito(carritoS);		
-					tablacarrito = new JTable(modelocarrito);
-		            tablacarrito.revalidate();
-		            tablacarrito.repaint();
+					modelocarrito = new ModeloCarrito(carritoS);
 				}
 				else if (combo.getSelectedItem().toString().equals("PRECIO")) {
 					HashMap<Entrada, Integer> carritoP = new HashMap<Entrada, Integer>();
 					for(Entrada entrada: carrito.keySet()) {
-						if (entrada.getPrecio() == Integer.parseInt(filtrar.getText())) {
+						if (Float.toString(entrada.getPrecio()).contains(filtrar.getText())) {
 							carritoP.put(entrada, carrito.get(entrada));
 						}
 					}
-					modelocarrito = new ModeloCarrito(carritoP);		
-					tablacarrito = new JTable(modelocarrito);
-		            tablacarrito.revalidate();
-		            tablacarrito.repaint();
+					modelocarrito = new ModeloCarrito(carritoP);
 				}
 				else {
 					HashMap<Entrada, Integer> carritoF = new HashMap<Entrada, Integer>();
 					for(Entrada entrada: carrito.keySet()) {
-						if (entrada.getHorario().equals(filtrar.getText())) {
+						if (entrada.getHorario().contains(filtrar.getText())) {
 							carritoF.put(entrada, carrito.get(entrada));
 						}
 					}
-					modelocarrito = new ModeloCarrito(carritoF);		
-					tablacarrito = new JTable(modelocarrito);
-		            tablacarrito.revalidate();
-		            tablacarrito.repaint();
+					modelocarrito = new ModeloCarrito(carritoF);
 				}
+				tablacarrito.setModel(modelocarrito);
 			}
 		}
 	}	

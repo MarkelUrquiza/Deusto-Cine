@@ -3,9 +3,6 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,7 +19,6 @@ import db.BBDD;
 import domain.Butaca;
 import domain.Cartelera;
 import domain.Cliente;
-import domain.Entrada;
 import domain.Pelicula;
 
 public class VentanaSeleccionarEntradas extends JFrame {
@@ -108,6 +104,7 @@ public class VentanaSeleccionarEntradas extends JFrame {
         JButton btnAceptar = new JButton("Aceptar");
         btnAceptar.addActionListener(e -> {
             boolean valido = true;
+            
             for (int i = 0; i < pagina.getTabCount(); i++) {
                 JPanel panelCliente = (JPanel) pagina.getComponentAt(i);
                 JPanel datos = (JPanel) panelCliente.getComponent(2);
@@ -117,17 +114,13 @@ public class VentanaSeleccionarEntradas extends JFrame {
                 JTextField ap2 = (JTextField) datos.getComponent(5);
                 JSlider edad = (JSlider) datos.getComponent(7);
 
-                if (nom.getText().isEmpty() || ap1.getText().isEmpty() || ap2.getText().isEmpty() || edad.getValue() < 3) {
+                if (nom.getText().isEmpty() || ap1.getText().isEmpty() || ap2.getText().isEmpty() || edad.getValue() < 3 || butacasSeleccionadas.size() != numeroPersonas) {
                     valido = false;
                 }
             }
 
             if (valido) {
                 Pelicula p = bd.obtenerPeliculaportitulo(titulo);
-                if (p == null) {
-                    System.out.println("Error: La película con el título '" + titulo + "' no se ha encontrado.");
-                    return;  
-                }
                 if (c.getCarrito_de_compra().isEmpty()) {
                     bd.meterCarrito(c.getDni());
 				}

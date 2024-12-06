@@ -230,7 +230,6 @@ public class Aniadir_carrito extends JFrame {
 	    int contador = 0;
 
 	    for (Entrada e : c.getCarrito_de_compra().keySet()) {
-
 	        if (e.getSala()  == id_sala && e.getTitulo_peli().equals(titulo) && e.getHorario().equals(horarios.getSelectedItem().toString())) {
 	            
 	            contador = c.getCarrito_de_compra().get(e);

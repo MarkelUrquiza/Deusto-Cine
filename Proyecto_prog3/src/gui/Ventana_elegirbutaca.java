@@ -20,7 +20,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import db.BBDD;
 import domain.Butaca;
-import domain.ButacaHorario;
 import domain.Cartelera;
 
 public class Ventana_elegirbutaca extends JFrame {

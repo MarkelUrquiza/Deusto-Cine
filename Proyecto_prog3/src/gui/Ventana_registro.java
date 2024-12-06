@@ -6,16 +6,20 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-
 import db.BBDD;
 import domain.Cliente;
 
@@ -122,7 +126,41 @@ public class Ventana_registro extends JFrame {
 				
 			}
 		});
-        
+        InputMap inputMap = btnregistrar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = btnregistrar.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke("ENTER"), "Registrar");
+        actionMap.put("Iniciar sesion", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public void actionPerformed(ActionEvent e) {
+            	if (!conf.getText().equals(con.getText())) {
+					JOptionPane.showConfirmDialog(null, "Contraseña y Confirmar contraseña no son iguales",
+							"Contraseñas mal!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					con.setText("");
+					conf.setText("");
+				} else {
+					if (nom.getText().isEmpty() || ape.getText().isEmpty() || cor.getText().isEmpty() || dn.getText().isEmpty()
+							|| u.getText().isEmpty() || con.getText().isEmpty() || conf.getText().isEmpty()) {
+						JOptionPane.showConfirmDialog(null, "Hay que rellenar todos los huecos",
+								"CUIDADO!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						if (bd.existeUsuario(u.getText(), dn.getText(), cor.getText())) {
+							u.setText("");con.setText("");nom.setText("");ape.setText("");dn.setText("");cor.setText("");
+							JOptionPane.showConfirmDialog(null, "Este DNI, correo o nombre de usuario ya esta en uso",
+									"Usuario existente!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null);
+							bd.registrar(c);
+							dispose();
+							vI.setVisible(true);
+						}
+						
+					}
+				}
+            }
+        });
         btncancelar = new JButton("Cancelar");
         btncancelar.setFont(fuente);
         btncancelar.addActionListener(new ActionListener() {

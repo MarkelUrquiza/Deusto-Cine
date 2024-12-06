@@ -32,10 +32,11 @@ public class Ventana_inicial extends JFrame{
 	private JLabel titulo;
 	private JButton carrito, cerrarsesion;
 	private JScrollPane scroll;
-	private JFrame vActual;
+	private JFrame vActual, vAnterior;
 	
-	public Ventana_inicial(Cartelera cartelera, Cliente c, BBDD bd) {
+	public Ventana_inicial(JFrame vI,Cartelera cartelera, Cliente c, BBDD bd) {
 		vActual = this;
+		vAnterior = vI;
 		pcentro = new JPanel();
 		psur = new JPanel();
 		pnorte = new JPanel();
@@ -65,7 +66,8 @@ public class Ventana_inicial extends JFrame{
 		psur.add(cerrarsesion);
 		cerrarsesion.setFont(fuentebtn);
 		cerrarsesion.addActionListener(e -> {
-			System.exit(0);
+			dispose();
+			vAnterior.setVisible(true);
 		});
 
 		pcentro.setLayout(new GridLayout(0,4));
