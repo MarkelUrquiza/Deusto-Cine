@@ -3,6 +3,8 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.LinkedList;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -104,7 +106,12 @@ public class VentanaSeleccionarEntradas extends JFrame {
         JButton btnAceptar = new JButton("Aceptar");
         btnAceptar.addActionListener(e -> {
             boolean valido = true;
+            boolean validaredad = true;
+            boolean validarnombres = true;
+            boolean validarbutacas =true;
             
+            LinkedList<Object> ll = new LinkedList<Object>();
+            ArrayList<String> al = new ArrayList<String>();
             for (int i = 0; i < pagina.getTabCount(); i++) {
                 JPanel panelCliente = (JPanel) pagina.getComponentAt(i);
                 JPanel datos = (JPanel) panelCliente.getComponent(2);
@@ -113,13 +120,27 @@ public class VentanaSeleccionarEntradas extends JFrame {
                 JTextField ap1 = (JTextField) datos.getComponent(3);
                 JTextField ap2 = (JTextField) datos.getComponent(5);
                 JSlider edad = (JSlider) datos.getComponent(7);
-
-                if (nom.getText().isEmpty() || ap1.getText().isEmpty() || ap2.getText().isEmpty() || edad.getValue() < 3 || butacasSeleccionadas.size() != numeroPersonas) {
+                
+				String con = nom.getText() + ap1.getText() + ap2.getText();
+				
+                if (nom.getText().isEmpty() || ap1.getText().isEmpty() || ap2.getText().isEmpty()) {
                     valido = false;
-                }
+                } else if (butacasSeleccionadas.size() != numeroPersonas){
+                	validarbutacas = false;
+                } else if (edad.getValue() < 3){
+                	validaredad = false;
+                } else if(al.contains(con)) {
+                	validarnombres = false;
+                } else {
+					ll.addLast(edad.getValue());
+					ll.addLast(nom.getText());
+					ll.addLast(ap1.getText());
+					ll.addLast(ap2.getText());
+					al.add(con);
+				}
             }
 
-            if (valido) {
+            if (valido && validaredad && validarnombres && validarbutacas) {
                 Pelicula p = bd.obtenerPeliculaportitulo(titulo);
                 if (c.getCarrito_de_compra().isEmpty()) {
                     bd.meterCarrito(c.getDni());
@@ -129,7 +150,12 @@ public class VentanaSeleccionarEntradas extends JFrame {
                 for (Butaca butaca : butacasSeleccionadas) {
                     if (butaca != null) {
                     	int id_carrito = bd.obtenerIdcarritopordni(c.getDni());
-                        bd.meterEntrada(butaca.getId(), id_peli, horario, id_carrito);
+                    	int edad = (int) ll.removeFirst();
+                    	String nombre = (String) ll.removeFirst();
+                    	String apellido = (String) ll.removeFirst();
+                    	String apellido2 = (String) ll.removeFirst();
+                    	bd.meterEntrada(butaca.getId(), id_peli, horario, id_carrito, edad, nombre, apellido, apellido2);
+                        
                     }
                 }
                 c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
@@ -137,10 +163,19 @@ public class VentanaSeleccionarEntradas extends JFrame {
                 vAnterior.setVisible(true);
                 vNueva.setVisible(false);
                 vActual.dispose();
-            } else {
-            	JOptionPane.showMessageDialog(null, "No puedes dejar ningun parametro sin rellenar y la edad minima es de 3 años", "Texto vacio", JOptionPane.WARNING_MESSAGE);
+            } else if (!validarbutacas){
+            	JOptionPane.showMessageDialog(null, "Tienes que elegir una butaca por persona", "Butacas incorrectas", JOptionPane.WARNING_MESSAGE);
                 return;
-            }
+            } else if (!valido){
+            	JOptionPane.showMessageDialog(null, "No puedes dejar parametros sin rellenar", "Texto vacio", JOptionPane.WARNING_MESSAGE);
+                return;
+            } else if (!validarnombres) {
+            	JOptionPane.showMessageDialog(null, "No puede haber dos entradas con nombre y apellidos totalmente iguales", "Duplicados", JOptionPane.WARNING_MESSAGE);
+                return;
+			} else {
+            	JOptionPane.showMessageDialog(null, "La edad tiene que ser superior o igual a 3 años", "Edad incorrecta", JOptionPane.WARNING_MESSAGE);
+                return;
+			}
         });
 
         JPanel panelSur = new JPanel();

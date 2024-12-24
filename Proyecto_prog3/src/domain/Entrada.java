@@ -11,17 +11,37 @@ public class Entrada {
 	private float precio;
 	private String nombre;
 	private String apellido;
+	private String apellido2;
 	private int edad;
 	
-	public Entrada(Butaca asiento, int id_peli, String titulo_peli, int sala, float precio, String horario) {
+	public Entrada(Butaca asiento, int id_peli, String titulo_peli, int sala, float precio, String horario, String nombre, String apellido, int edad, String apellido2) {
 		super();
 		this.id = cont;
 		this.asiento = asiento;
 		this.horario = horario;
-		this.precio = precio;
+		this.precio =  CalcularPrecio(edad);
 		this.id_peli = id_peli;
 		this.titulo_peli = titulo_peli;
 		this.sala = sala;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.edad = edad;
+		this.apellido2 = apellido2;
+		cont++;
+	}
+	public Entrada(int id,Butaca asiento, int id_peli, String titulo_peli, int sala, float precio, String horario, String nombre, String apellido, int edad, String apellido2) {
+		super();
+		this.id = id;
+		this.asiento = asiento;
+		this.horario = horario;
+		this.precio =  CalcularPrecio(edad);
+		this.id_peli = id_peli;
+		this.titulo_peli = titulo_peli;
+		this.sala = sala;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.edad = edad;
+		this.apellido2 = apellido2;
 		cont++;
 	}
 	
@@ -75,7 +95,39 @@ public class Entrada {
 	public int getId_peli() {
 		return id_peli;
 	}
+	
 
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	public int getEdad() {
+		return edad;
+	}
+
+	public void setEdad(int edad) {
+		this.edad = edad;
+	}
+	
+	public String getApellido2() {
+		return apellido2;
+	}
+
+	public void setApellido2(String apellido2) {
+		this.apellido2 = apellido2;
+	}
 
 	@Override
 	public String toString() {
@@ -84,4 +136,18 @@ public class Entrada {
 				+ ", apellido=" + apellido + ", edad=" + edad + "]";
 	}
 	
+	public float CalcularPrecio(int edad) {
+		if (edad < 3) {
+			return -1;
+		} else if (edad < 10) {
+			return 0;
+		} else if (edad < 18) {
+			return 8;
+		} else if (edad < 65) {
+			return 12;
+		} else {
+			return 8;
+		}
+		
+	}
 }

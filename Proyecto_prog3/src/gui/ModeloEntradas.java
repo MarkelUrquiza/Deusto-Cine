@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ public class ModeloEntradas extends DefaultTableModel{
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<Entrada, Integer> entradas;
-	private List<String> titulos = Arrays.asList("NOMBRE","APELLIDO","EDAD","PRECIO","FILA","COLUMNA");
+	private List<String> titulos = Arrays.asList("NOMBRE","PRIMER APELLIDO","SEGUNDO APELLIDO","EDAD","PRECIO","FILA","COLUMNA");
 	
 	public ModeloEntradas(HashMap<Entrada, Integer> entradas) {
 		super();
@@ -39,19 +40,20 @@ public class ModeloEntradas extends DefaultTableModel{
 		return false;
 	}
 
-	/*@Override
+	@Override
 	public Object getValueAt(int row, int column) {
 		ArrayList<Entrada> entradass = new ArrayList<Entrada>(entradas.keySet());
 		Entrada e = entradass.get(row);
 		switch (column) {
 			case 0: return e.getNombre();
 			case 1: return e.getApellido();
-			case 2: return e.getEdad();
-			case 3: return e.getPrecio();
-			case 4: return e.getAsiento().getFila();
-			case 5: return e.getAsiento().getColumna();
+			case 2: return e.getApellido2();
+			case 3: return e.getEdad();
+			case 4: return e.getPrecio();
+			case 5: return e.getAsiento().getFila();
+			case 6: return e.getAsiento().getColumna();
 			default:
 				throw new IllegalArgumentException("Unexpected value: " + column);
 		}
-	}*/
+	}
 }

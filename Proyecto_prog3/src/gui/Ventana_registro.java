@@ -115,7 +115,7 @@ public class Ventana_registro extends JFrame {
 							JOptionPane.showConfirmDialog(null, "Este DNI, correo o nombre de usuario ya esta en uso",
 									"Usuario existente!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 						} else {
-							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null);
+							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null,0);
 							bd.registrar(c);
 							dispose();
 							vI.setVisible(true);
@@ -151,7 +151,7 @@ public class Ventana_registro extends JFrame {
 							JOptionPane.showConfirmDialog(null, "Este DNI, correo o nombre de usuario ya esta en uso",
 									"Usuario existente!!!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 						} else {
-							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null);
+							Cliente c = new Cliente(u.getText(), con.getText(), nom.getText(), ape.getText(), dn.getText(), cor.getText(), null, 0);
 							bd.registrar(c);
 							dispose();
 							vI.setVisible(true);

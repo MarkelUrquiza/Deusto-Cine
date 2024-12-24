@@ -126,7 +126,6 @@ public class Inicio_sesion extends JFrame {
 
                     dialog.setVisible(true);
                     //bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));
-            
                 	new Ventana_inicial(vActual,cartelera, c, bd);
 
                 }

@@ -9,9 +9,10 @@ public class Cliente{
 	private String apellidos;
 	private String dni;
 	private String correo; 
+	private float salario;
 	private HashMap<Entrada, Integer> carrito_de_compra;
 
-	public Cliente(String user, String contrasenia, String nombre, String apellidos, String dni, String correo,HashMap<Entrada, Integer> carrito_de_compra) {
+	public Cliente(String user, String contrasenia, String nombre, String apellidos, String dni, String correo,HashMap<Entrada, Integer> carrito_de_compra, float salario) {
 		this.user = user;
 		this.contrasenia = contrasenia;
 		this.nombre = nombre;
@@ -19,6 +20,7 @@ public class Cliente{
 		this.dni = dni;
 		this.correo = correo;
 		this.carrito_de_compra = carrito_de_compra;
+		this.salario = salario;
 	}
 	
 	
@@ -87,6 +89,17 @@ public class Cliente{
 	public void setCarrito_de_compra(HashMap<Entrada, Integer> carrito_de_compra) {
 		this.carrito_de_compra = carrito_de_compra;
 	}
+
+
+	public float getSalario() {
+		return salario;
+	}
+
+
+	public void setSalario(float salario) {
+		this.salario = salario;
+	}
+	
 	/*public HashMap<Entrada, Integer> cargarEntradas() {
 		HashMap<Entrada, Integer> entradas = new HashMap<Entrada, Integer>();
 		File f = new File("resource/data/Entrada.txt");

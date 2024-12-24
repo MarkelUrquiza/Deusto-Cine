@@ -98,7 +98,8 @@ public class BBDD {
                     + " contrasenia TEXT NOT NULL,\n"
                     + " nombre TEXT NOT NULL,\n"
                     + " apellidos TEXT NOT NULL,\n"
-                    + " correo TEXT NOT NULL\n);";
+                    + " correo TEXT NOT NULL,\n"
+                    + " salario TEXT NOT NULL\n);";
 
             String sql2 = "CREATE TABLE IF NOT EXISTS Pelicula (\n"
                     + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
@@ -117,6 +118,10 @@ public class BBDD {
                     + " id_carrito INTEGER NOT NULL,\n"
                     + " id_peli INTEGER NOT NULL,\n"
                     + " id_horario INTEGER NOT NULL,\n"
+                    + " edad INTEGER NOT NULL,\n"
+                    + " nombre TEXT NOT NULL,\n"
+                    + " apellido TEXT NOT NULL,\n"
+                    + " apellido2 TEXT NOT NULL,\n"
                     + " FOREIGN KEY(id_horario) REFERENCES Horarios(id) ON DELETE CASCADE,\n"
                     + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE,\n"
                     + " FOREIGN KEY(id_carrito) REFERENCES Carrito(id) ON DELETE CASCADE,\n"
@@ -157,6 +162,9 @@ public class BBDD {
                     + " cliente_dni TEXT NOT NULL,\n"
             		+ " id_peli INTEGER NOT NULL,\n"
             		+ " id_horario INTEGER NOT NULL,\n"
+                    + " edad INTEGER NOT NULL,\n"
+                    + " nombre TEXT NOT NULL,\n"
+                    + " apellido TEXT NOT NULL,\n"
             		+ " FOREIGN KEY(id_horario) REFERENCES Horarios(id) ON DELETE CASCADE,\n"
             		+ " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE,\n"
             		+ " FOREIGN KEY(cliente_dni) REFERENCES Cliente(dni) ON DELETE CASCADE,\n"
@@ -199,17 +207,18 @@ public class BBDD {
                     return;
                 }
         	
-            String insertCliente = "INSERT OR IGNORE INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo) VALUES\n"
-                    + "('11111111A', 'user1', 'pass1', 'John', 'Doe', 'john.doe@example.com'),\n"
-                    + "('22222222B', 'user2', 'pass2', 'Jane', 'Doe', 'jane.doe@example.com'),\n"
-                    + "('33333333C', 'user3', 'pass3', 'Alice', 'Smith', 'alice.smith@example.com'),\n"
-                    + "('44444444D', 'user4', 'pass4', 'Bob', 'Johnson', 'bob.johnson@example.com'),\n"
-                    + "('55555555E', 'user5', 'pass5', 'Charlie', 'Brown', 'charlie.brown@example.com'),\n"
-                    + "('66666666F', 'user6', 'pass6', 'Eve', 'Davis', 'eve.davis@example.com'),\n"
-                    + "('77777777G', 'user7', 'pass7', 'Frank', 'Miller', 'frank.miller@example.com'),\n"
-                    + "('88888888H', 'user8', 'pass8', 'Grace', 'Lee', 'grace.lee@example.com'),\n"
-                    + "('99999999I', 'user9', 'pass9', 'Hank', 'Wilson', 'hank.wilson@example.com'),\n"
-                    + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com');";
+            String insertCliente = "INSERT OR IGNORE INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo, salario) VALUES\n"
+                    + "('11111111A', 'user1', 'pass1', 'John', 'Doe', 'john.doe@example.com', 56),\n"
+                    + "('22222222B', 'user2', 'pass2', 'Jane', 'Doe', 'jane.doe@example.com', 78),\n"
+                    + "('33333333C', 'user3', 'pass3', 'Alice', 'Smith', 'alice.smith@example.com', 45),\n"
+                    + "('44444444D', 'user4', 'pass4', 'Bob', 'Johnson', 'bob.johnson@example.com', 62),\n"
+                    + "('55555555E', 'user5', 'pass5', 'Charlie', 'Brown', 'charlie.brown@example.com', 89),\n"
+                    + "('66666666F', 'user6', 'pass6', 'Eve', 'Davis', 'eve.davis@example.com', 34),\n"
+                    + "('77777777G', 'user7', 'pass7', 'Frank', 'Miller', 'frank.miller@example.com', 100),\n"
+                    + "('88888888H', 'user8', 'pass8', 'Grace', 'Lee', 'grace.lee@example.com', 73),\n"
+                    + "('99999999I', 'user9', 'pass9', 'Hank', 'Wilson', 'hank.wilson@example.com', 54),\n"
+                    + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com', 21);";
+
 
             String insertPelicula = "INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES\n"
                     + "(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/Inception.png', '1,2', 1),\n"
@@ -243,17 +252,18 @@ public class BBDD {
                     + "('33333333C'),\n"
                     + "('44444444D');";
 
-            String insertEntrada = "INSERT OR IGNORE INTO Entrada (id_butaca, id_carrito, id_peli, id_horario) VALUES\n"
-                    + "(4, 1, 1, 1),\n"
-                    + "(49, 1, 2, 3),\n"
-                    + "(98, 2, 3, 5),\n"
-                    + "(139, 2, 4, 7),\n"
-                    + "(1, 2, 5, 10),\n"
-                    + "(36, 3, 6, 11),\n"
-                    + "(92, 3, 7, 14),\n"
-                    + "(134, 3, 8, 15),\n"
-                    + "(135, 3, 8, 15),\n"
-                    + "(1, 4, 1, 2);";
+            String insertEntrada = "INSERT OR IGNORE INTO Entrada (id_butaca, id_carrito, id_peli, id_horario, edad, nombre, apellido, apellido2) VALUES\n"
+                    + "(4, 1, 1, 1, 25, 'Carlos', 'González', 'Fernández'),\n"
+                    + "(49, 1, 2, 3, 30, 'Ana', 'Martínez', 'Rodríguez'),\n"
+                    + "(98, 2, 3, 5, 22, 'Luis', 'Pérez', 'Gómez'),\n"
+                    + "(139, 2, 4, 7, 28, 'María', 'López', 'Martín'),\n"
+                    + "(1, 2, 5, 10, 35, 'Javier', 'Sánchez', 'Ruiz'),\n"
+                    + "(36, 3, 6, 11, 40, 'Isabel', 'García', 'Ortiz'),\n"
+                    + "(92, 3, 7, 14, 27, 'Andrés', 'Hernández', 'Jiménez'),\n"
+                    + "(134, 3, 8, 15, 33, 'Lucía', 'Ramírez', 'Alonso'),\n"
+                    + "(135, 3, 8, 15, 29, 'Sofía', 'Torres', 'Moreno'),\n"
+                    + "(1, 4, 1, 2, 24, 'Diego', 'Morales', 'Navarro');";
+
             
             String insertButacaHorario = "INSERT OR IGNORE INTO Butaca_Horario (id_butaca, id_horario) VALUES\n"
             		+ "(4, 1),\n"
@@ -318,7 +328,7 @@ public class BBDD {
 		return existe;
 	}
 	public void registrar(Cliente c) {
-		String sql = "INSERT INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo) VALUES (?, ?, ?, ?, ?, ?);";
+		String sql = "INSERT INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo, salario) VALUES (?, ?, ?, ?, ?, ?, salario);";
 		
 		try (Connection con = DriverManager.getConnection(connectionString);
 			 PreparedStatement Stmt = con.prepareStatement(sql)) {
@@ -329,6 +339,7 @@ public class BBDD {
 				Stmt.setString(4, c.getNombre());
 				Stmt.setString(5, c.getApellidos());
 				Stmt.setString(6, c.getCorreo());
+				Stmt.setFloat(7, c.getSalario());
 				
 				
 				if (!Stmt.execute()) {
@@ -374,7 +385,7 @@ public class BBDD {
 			if (rs.next()) {
 				c = new Cliente(rs.getString("username"), rs.getString("contrasenia"),
 						rs.getString("nombre"), rs.getString("apellidos"), 
-						rs.getString("dni"), rs.getString("correo"), null);
+						rs.getString("dni"), rs.getString("correo"), null, rs.getFloat("salario"));
 			}
 			
 			rs.close();
@@ -422,14 +433,32 @@ public class BBDD {
 	        ResultSet rs = pStmt.executeQuery();
 	        
 	        while (rs.next()) {
+	        	int id = rs.getInt("id");
 	            int idButaca = rs.getInt("id_butaca");
 	            int idPelicula = rs.getInt("id_peli");
 	            String horario = BuscarHorarioPorId(rs.getInt("id_horario"));
+	            int edad = rs.getInt("edad");
+	            String nombre = rs.getString("nombre");
+	            String apellido = rs.getString("apellido");
+	            String apellido2 = rs.getString("apellido2");
 	            
 	            Butaca butaca = obtenerButacaporId(idButaca);
 	            Pelicula pelicula = obtenerPeliculaporID(idPelicula);
 	            
-	            e = new Entrada(butaca, pelicula.getId(), pelicula.getTitulo(), pelicula.getId_sala(), 10, horario);
+	            float precio;
+        		if (edad < 3) {
+        			precio = -1;
+        		} else if (edad < 10) {
+        			precio = 0;
+        		} else if (edad < 18) {
+        			precio = 8;
+        		} else if (edad < 65) {
+        			precio = 12;
+        		} else {
+        			precio = 8;
+        		}
+	            
+	            e = new Entrada(id,butaca, pelicula.getId(), pelicula.getTitulo(), pelicula.getId_sala(), precio, horario, nombre, apellido, edad, apellido2);
 	            entradas.add(e);
 	            
 	        }
@@ -771,8 +800,8 @@ public class BBDD {
 		
 		return p;
 	}
-	public void meterEntrada(int id_butaca, int id_peli, String horario, int id_carrito) {
-		String sql = "INSERT INTO Entrada (id_butaca, id_carrito, id_peli, id_horario) VALUES (?,?,?,?)\n";
+	public void meterEntrada(int id_butaca, int id_peli, String horario, int id_carrito, int edad, String nombre, String apellido, String apellido2) {
+		String sql = "INSERT INTO Entrada (id_butaca, id_carrito, id_peli, id_horario, edad, nombre, apellido, apellido2) VALUES (?,?,?,?,?,?,?,?)\n";
 		
 		try (Connection con = DriverManager.getConnection(connectionString);
 			 PreparedStatement Stmt = con.prepareStatement(sql)) {
@@ -780,6 +809,10 @@ public class BBDD {
 			Stmt.setInt(2, id_carrito);
 			Stmt.setInt(3, id_peli);
 			Stmt.setInt(4, BuscarHorario(horario));
+			Stmt.setInt(5, edad);
+			Stmt.setString(6, nombre);
+			Stmt.setString(7, apellido);
+			Stmt.setString(8, apellido2);
 			
 			if (!Stmt.execute()) {
 				logger.info(String.format("Entrada insertada en la BBDD"));
@@ -1087,6 +1120,68 @@ public class BBDD {
         return id;
     }
 
-    
+    public List<Entrada> calcularPrecioTotal(Entrada e) {
+    	String sql = "SELECT * FROM Entrada WHERE id_horario = ? and id_peli = ? and id_carrito = ?";
+    	List<Entrada> entradas = new ArrayList<Entrada>();
+    	try (Connection conn = DriverManager.getConnection(connectionString);
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+    		   pstmt.setInt(1, BuscarHorario(e.getHorario()));
+               pstmt.setInt(2, e.getId_peli());
+               pstmt.setInt(3, obtenerIdcarritoporEntrada(e));
+
+               ResultSet rs = pstmt.executeQuery();
+               while (rs.next()) {
+            	int id = rs.getInt("id");
+   	            int idButaca = rs.getInt("id_butaca");
+   	            int idPelicula = rs.getInt("id_peli");
+   	            String horario = BuscarHorarioPorId(rs.getInt("id_horario"));
+   	            int edad = rs.getInt("edad");
+   	            String nombre = rs.getString("nombre");
+   	            String apellido = rs.getString("apellido");
+   	            String apellido2 = rs.getString("apellido2");
+   	            
+   	            Butaca butaca = obtenerButacaporId(idButaca);
+   	            Pelicula pelicula = obtenerPeliculaporID(idPelicula);
+   	            
+   	            float precio;
+	           		if (edad < 3) {
+	           			precio = -1;
+	           		} else if (edad < 10) {
+	           			precio = 0;
+	           		} else if (edad < 18) {
+	           			precio = 8;
+	           		} else if (edad < 65) {
+	           			precio = 12;
+	           		} else {
+	           			precio = 8;
+	           		}
+   	            
+   	            e = new Entrada(id,butaca, pelicula.getId(), pelicula.getTitulo(), pelicula.getId_sala(), precio, horario, nombre, apellido, edad, apellido2);
+   	            entradas.add(e);
+               }
+           } catch (SQLException ex) {
+               logger.warning(String.format("Error al devolver el precio total: %s", ex.getMessage()));
+           }
+           return entradas;
+    }
+    public int obtenerIdcarritoporEntrada(Entrada entrada) {
+	    String sql = "SELECT id_carrito FROM Entrada WHERE id = ?";
+	    int id_carrito = 0;
+	    try (Connection con = DriverManager.getConnection(connectionString);
+	         PreparedStatement pStmt = con.prepareStatement(sql)) {
+	        pStmt.setInt(1, entrada.getId());
+	        try (ResultSet rs = pStmt.executeQuery()) {
+	            if (rs.next()) { 
+	                id_carrito = rs.getInt("id_carrito");
+	                logger.info(String.format("Se ha encontrado correctamente el Carrito con id: %d", id_carrito));
+	            } else {
+	                logger.warning(String.format("No se encontró un carrito asociado a la entrada: %s", entrada.toString()));
+	            }
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al encontrar el Carrito para la entrada %s: %s", entrada.toString(), e.getMessage()));
+	    }
+	    return id_carrito;
+	}
 }
