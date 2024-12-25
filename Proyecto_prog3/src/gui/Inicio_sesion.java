@@ -96,6 +96,10 @@ public class Inicio_sesion extends JFrame {
                 	if (c.getCarrito_de_compra() == null ) {
                 	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
                 	}
+                	/*String h = bd.InicioSesion(c.getDni());
+                	System.out.println(h);
+                    bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));*/
+                	
                     dispose();
                     JProgressBar progressBar = new JProgressBar(0, 100);
                     progressBar.setValue(0);
@@ -123,9 +127,8 @@ public class Inicio_sesion extends JFrame {
                             dialog.dispose();
                         }
                     }).start();
-
+                    
                     dialog.setVisible(true);
-                    //bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));
                 	new Ventana_inicial(vActual,cartelera, c, bd);
 
                 }
@@ -151,6 +154,10 @@ public class Inicio_sesion extends JFrame {
                      	if (c.getCarrito_de_compra() == null ) {
                      	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
                      	}
+                    	/*String h = bd.InicioSesion(c.getDni());
+                    	System.out.println(h);
+                        bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));*/
+                        
                          dispose();
                          JProgressBar progressBar = new JProgressBar(0, 100);
                          progressBar.setValue(0);

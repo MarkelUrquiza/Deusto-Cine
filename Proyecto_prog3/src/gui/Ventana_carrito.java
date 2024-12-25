@@ -242,17 +242,24 @@ public class Ventana_carrito extends JFrame{
 		
 		tablacarrito.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tablacarrito.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int row = tablacarrito.getSelectedRow();
-				String titulo = (String) tablacarrito.getValueAt(row, 0);
-				String horario = (String) tablacarrito.getValueAt(row, 2);
-				int sala = (int) tablacarrito.getValueAt(row, 1);
-				modeloentrada = new ModeloEntradas(filtrarEntradaParaTablaEntradas(titulo, horario, sala, c.getCarrito_de_compra()));
-				tablaentradas.setModel(modeloentrada);				
-			}
+		    @Override
+		    public void valueChanged(ListSelectionEvent e) {
+		        if (!e.getValueIsAdjusting()) {
+		            int row = tablacarrito.getSelectedRow();
+		            if (row != -1) {
+		                String titulo = (String) tablacarrito.getValueAt(row, 0);
+		                String horario = (String) tablacarrito.getValueAt(row, 2);
+		                int sala = (int) tablacarrito.getValueAt(row, 1);
+		                
+		                modeloentrada = new ModeloEntradas(filtrarEntradaParaTablaEntradas(titulo, horario, sala, c.getCarrito_de_compra()));
+		                tablaentradas.setModel(modeloentrada);
+		            } else {
+		                tablaentradas.setModel(new ModeloEntradas(new HashMap<>()));
+		            }
+		        }
+		    }
 		});
+
 		scrollentradas = new JScrollPane(tablaentradas);
 		
 		pfiltro.add(pizquierda);
@@ -298,50 +305,50 @@ public class Ventana_carrito extends JFrame{
 	}
 	
 	public void filtrar(Cliente c, BBDD bd) {
-		HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
+	    HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
+	    tablaentradas.setModel(new ModeloEntradas(new HashMap<>()));
 
-		if (carrito!=null) {
-			if (combo.getSelectedItem().toString()!=null) {
-				if (combo.getSelectedItem().toString().equals("NOMBRE DE PELICULA")) {
-					HashMap<Entrada, Integer> carritoNP = new HashMap<Entrada, Integer>();
-					for(Entrada entrada: carrito.keySet()) {
-						if (entrada.getTitulo_peli().contains(filtrar.getText())) {
-							carritoNP.put(entrada, carrito.get(entrada));
-						}
-					}
-					modelocarrito = new ModeloCarrito(carritoNP,bd);
-				}
-				else if (combo.getSelectedItem().toString().equals("SALA")) {
-					HashMap<Entrada, Integer> carritoS = new HashMap<Entrada, Integer>();
-					for(Entrada entrada: carrito.keySet()) {
-						if (Integer.toString(entrada.getSala()).contains(filtrar.getText())) {
-							carritoS.put(entrada, carrito.get(entrada));
-						}
-					}
-					modelocarrito = new ModeloCarrito(carritoS, bd);
-				}
-				else if (combo.getSelectedItem().toString().equals("PRECIO")) {
-					HashMap<Entrada, Integer> carritoP = new HashMap<Entrada, Integer>();
-					for(Entrada entrada: carrito.keySet()) {
-						if (Float.toString(entrada.getPrecio()).contains(filtrar.getText())) {
-							carritoP.put(entrada, carrito.get(entrada));
-						}
-					}
-					modelocarrito = new ModeloCarrito(carritoP, bd);
-				}
-				else {
-					HashMap<Entrada, Integer> carritoF = new HashMap<Entrada, Integer>();
-					for(Entrada entrada: carrito.keySet()) {
-						if (entrada.getHorario().contains(filtrar.getText())) {
-							carritoF.put(entrada, carrito.get(entrada));
-						}
-					}
-					modelocarrito = new ModeloCarrito(carritoF, bd);
-				}
-				tablacarrito.setModel(modelocarrito);
-			}
-		}
-	}	
+	    if (carrito != null) {
+	        if (combo.getSelectedItem().toString() != null) {
+	            HashMap<Entrada, Integer> carritoFiltrado = new HashMap<>();
+	            switch (combo.getSelectedItem().toString()) {
+	                case "NOMBRE DE PELICULA":
+	                    for (Entrada entrada : carrito.keySet()) {
+	                        if (entrada.getTitulo_peli().contains(filtrar.getText())) {
+	                            carritoFiltrado.put(entrada, carrito.get(entrada));
+	                        }
+	                    }
+	                    break;
+	                case "SALA":
+	                    for (Entrada entrada : carrito.keySet()) {
+	                        if (Integer.toString(entrada.getSala()).contains(filtrar.getText())) {
+	                            carritoFiltrado.put(entrada, carrito.get(entrada));
+	                        }
+	                    }
+	                    break;
+	                case "PRECIO":
+	                    for (Entrada entrada : carrito.keySet()) {
+	                        if (Float.toString(entrada.getPrecio()).contains(filtrar.getText())) {
+	                            carritoFiltrado.put(entrada, carrito.get(entrada));
+	                        }
+	                    }
+	                    break;
+	                default:
+	                    for (Entrada entrada : carrito.keySet()) {
+	                        if (entrada.getHorario().contains(filtrar.getText())) {
+	                            carritoFiltrado.put(entrada, carrito.get(entrada));
+	                        }
+	                    }
+	            }
+
+	            modelocarrito = new ModeloCarrito(carritoFiltrado, bd);
+	            tablacarrito.setModel(modelocarrito);
+	            tablacarrito.clearSelection();
+	        }
+	    }
+	}
+
+
 	public HashMap<Entrada, Integer> filtrarEntradasUnicas(HashMap<Entrada, Integer> carrito) {
 	    HashMap<String, Entrada> uniqueEntriesMap = new HashMap<>();
 	    HashMap<Entrada, Integer> filteredCarrito = new HashMap<>();

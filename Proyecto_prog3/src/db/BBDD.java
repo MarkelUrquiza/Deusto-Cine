@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -147,9 +148,8 @@ public class BBDD {
                     + " FOREIGN KEY(id_butaca) REFERENCES Butaca(id) ON DELETE CASCADE);";
             
             String sql7 = "CREATE TABLE IF NOT EXISTS InicioSesion (\n"
-            		+ " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            		+ " horario_inicio_sesion INTEGER NOT NULL,\n"
-            	    + " cliente_dni INTEGER NOT NULL,\n"
+            		+ " horario_inicio_sesion TEXT NOT NULL,\n"
+            	    + " cliente_dni TEXT PRIMARY KEY,\n"
             	    + " FOREIGN KEY(cliente_dni) REFERENCES Cliente(dni) ON DELETE CASCADE);";
             
             String sql8 = "CREATE TABLE IF NOT EXISTS Horarios (\n"
@@ -979,10 +979,10 @@ public class BBDD {
 	    }
 	}
 	public void comprarCarrito3(String dni) {
-	    String sql1 = "SELECT e.id_butaca, e.id_peli, e.id_horario " +
+	    String sql1 = "SELECT e.id_butaca, e.id_peli, e.id_horario, e.nombre, e.apellido, e.apellido2, e.edad " +
 	                  "FROM Entrada e WHERE e.id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
-	    String sqlInsertEntradasCompradas = "INSERT INTO EntradasCompradas (id_butaca, cliente_dni, id_peli, id_horario) " +
-	                                        "VALUES (?, ?, ?, ?)";
+	    String sqlInsertEntradasCompradas = "INSERT INTO EntradasCompradas (id_butaca, cliente_dni, id_peli, id_horario, edad, nombre, apellido) " +
+	                                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
 	    String sql2 = "DELETE FROM Butaca_Horario WHERE id_butaca IN (" +
 	                  "SELECT id_butaca FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?));";
 	    String sql3 = "DELETE FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
@@ -1005,6 +1005,9 @@ public class BBDD {
 	                pStmtInsert.setString(2, dni);
 	                pStmtInsert.setInt(3, rs.getInt("id_peli"));
 	                pStmtInsert.setInt(4, rs.getInt("id_horario")); 
+	                pStmtInsert.setInt(5, rs.getInt("edad"));
+	                pStmtInsert.setString(6, rs.getString("nombre"));
+	                pStmtInsert.setString(7, rs.getString("apellido"));
 	                pStmtInsert.executeUpdate();
 	            }
 
@@ -1020,31 +1023,35 @@ public class BBDD {
 	            int carritosEliminados = pStmt4.executeUpdate();
 	            logger.info(String.format("%d carritos eliminados", carritosEliminados));
 
+	            con.commit();
+	        } catch (Exception ex) {
+	            con.rollback();
+	            logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
 	        }
 	    } catch (Exception ex) {
-	        logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
+	        logger.warning(String.format("Error en la conexión a la base de datos: %s", ex.getMessage()));
 	    }
 	}
 
-    public String InicioSesion(String dni) {
-        String sql = "INSERT INTO InicioSesion (horario_inicio_sesion, cliente_dni) VALUES (?, ?)";
 
-        SimpleDateFormat horaActual = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        String horarioActual = horaActual.format(new Date());
+	public String InicioSesion(String dni) {
+	    String sql = "INSERT INTO InicioSesion (horario_inicio_sesion, cliente_dni) VALUES (?, ?)";
+	    SimpleDateFormat horaActual = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+	    String horarioActual = horaActual.format(new Date());
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try (Connection conn = DriverManager.getConnection(connectionString);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, horarioActual);
+	        pstmt.setString(2, dni);
 
-            pstmt.setString(1, horarioActual);
-            pstmt.setString(2, dni);
+	        pstmt.executeUpdate();
+	        logger.info(String.format("Sesión iniciada correctamente para el cliente con DNI: %s", dni));
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al insertar inicio de sesión: %s", e.getMessage()));
+	    }
+	    return horarioActual;
+	}
 
-            pstmt.executeUpdate();
-	        logger.info(String.format("Has iniciado sesion correctamente para cliente DNI: %s", dni));
-        } catch (Exception e) {
-	        logger.warning(String.format("Error al Insertar Inicio de Sesion: %s", e.getMessage()));
-        }
-        return horarioActual;
-    }
     public void CerrarSesion(String dni) {
         String sql = "DELETE FROM InicioSesion WHERE cliente_dni = ?";
 
@@ -1066,19 +1073,60 @@ public class BBDD {
 
         try {
             LocalDateTime inicioSesion = LocalDateTime.parse(horarioInicioSesion, formatter);
-            String sql = "DELETE FROM Horarios WHERE horario < ?";
+            String selectSql = "SELECT id, horarios FROM Pelicula";
+            String updateSql = "UPDATE Pelicula SET horarios = ? WHERE id = ?";
+            String deleteSql = "DELETE FROM Horarios WHERE horario < ?";
 
             try (Connection conn = DriverManager.getConnection(connectionString);
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, inicioSesion.format(formatter));
+                 PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+                 PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
 
-                pstmt.executeUpdate();
-                logger.info(String.format("Horarios eliminados"));
+                ResultSet rs = selectStmt.executeQuery();
+
+                while (rs.next()) {
+                    int peliculaId = rs.getInt("id");
+                    String horariosStr = rs.getString("horarios");
+
+                    if (horariosStr == null || horariosStr.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    String[] horarios = horariosStr.split(",");
+                    StringBuilder horariosActualizados = new StringBuilder();
+
+                    for (String h : horarios) {
+                        h = h.trim();
+                        try {
+                            LocalDateTime horario = LocalDateTime.parse(h, formatter);
+                            if (horario.isAfter(inicioSesion)) {
+                                if (horariosActualizados.length() > 0) {
+                                    horariosActualizados.append(",");
+                                }
+                                horariosActualizados.append(h);
+                            }
+                        } catch (Exception e) {
+                            logger.warning(String.format("Horario inválido '%s' ignorado: %s", h, e.getMessage()));
+                        }
+                    }
+
+                    updateStmt.setString(1, horariosActualizados.toString());
+                    updateStmt.setInt(2, peliculaId);
+                    updateStmt.executeUpdate();
+                }
+
+                deleteStmt.setString(1, inicioSesion.format(formatter));
+                deleteStmt.executeUpdate();
+                logger.info("Horarios pasados eliminados");
+
+            } catch (Exception e) {
+                logger.warning(String.format("Error al eliminar horarios pasados: %s", e.getMessage()));
             }
         } catch (Exception e) {
-            logger.warning(String.format("Error al eliminar horarios pasados", e.getMessage()));
+            logger.warning(String.format("Error al analizar la fecha de inicio de sesión: %s", e.getMessage()));
         }
     }
+
     public String BuscarHorarioPorId(int id) {
     	String horario = null;
         String sql = "SELECT horario FROM Horarios WHERE id = ?";
@@ -1184,4 +1232,23 @@ public class BBDD {
 	    }
 	    return id_carrito;
 	}
+    public int contarEntradasCompradas(Cliente c,String horario, String titulo) {
+    	String sql = "SELECT * FROM EntradasCompradas WHERE id_horario = ? AND cliente_dni = ? AND id_peli = ?";
+		int numeroentradas = 0;
+		try (Connection con = DriverManager.getConnection(connectionString);
+		     PreparedStatement pStmt = con.prepareStatement(sql)) {
+		    pStmt.setInt(1, BuscarHorario(horario));
+		    pStmt.setString(2, c.getDni());
+		    pStmt.setInt(3, obtenerIdPeliculaPorTitulo(titulo));
+		    
+		    try (ResultSet rs = pStmt.executeQuery()) {
+		        while (rs.next()) { 
+		            numeroentradas++;
+		        }
+		    }
+		} catch (Exception e) {
+		    logger.warning(String.format("Error al contar las entradas compradas: %s", e.getMessage()));
+ 	    }
+ 	    return numeroentradas;
+    }
 }

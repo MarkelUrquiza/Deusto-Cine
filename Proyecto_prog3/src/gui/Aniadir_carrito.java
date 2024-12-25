@@ -105,10 +105,10 @@ public class Aniadir_carrito extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String value = listapelis.getSelectedValue();
 				Pelicula p = bd.obtenerPeliculaportitulo(value);
-				if (comprobarLimiteEntradas(c, p.getId_sala(), p.getTitulo())) {
+				if (comprobarLimiteEntradas(c, p.getId_sala(), p.getTitulo(),bd, horarios.getSelectedItem().toString())) {
 					Object resultado = JOptionPane.showInputDialog(null, "Cuantas entradas quieres aniadir?", "Numero de entradas", 
 							JOptionPane.QUESTION_MESSAGE, null, new Object[] {1,2,3,4}, 1);
-					if (resultado != null && comprobarLimiteEntradas2(c, p.getId_sala(), p.getTitulo(), (int) resultado) == true) {
+					if (resultado != null && comprobarLimiteEntradas2(c, p.getId_sala(), p.getTitulo(), (int) resultado, bd,horarios.getSelectedItem().toString()) == true) {
 						new VentanaSeleccionarEntradas(vI,vActual,Integer.parseInt(resultado.toString()),bd,p.getId_sala(),p.getTitulo(),c,horarios.getSelectedItem().toString(),cartelera);
 						vActual.setEnabled(false);
 					} else {
@@ -226,7 +226,7 @@ public class Aniadir_carrito extends JFrame {
 		}
 		
 	}
-	public boolean comprobarLimiteEntradas(Cliente c,int id_sala, String titulo) {
+	public boolean comprobarLimiteEntradas(Cliente c,int id_sala, String titulo, BBDD bd, String horario) {
 	    int contador = 0;
 
 	    for (Entrada e : c.getCarrito_de_compra().keySet()) {
@@ -235,10 +235,10 @@ public class Aniadir_carrito extends JFrame {
 	            contador = c.getCarrito_de_compra().get(e);
 	        }
 	    }
-
+	    contador += bd.contarEntradasCompradas(c, horario, titulo);
 	    return (contador) < 5;
 	}
-	public boolean comprobarLimiteEntradas2(Cliente c,int id_sala, String titulo, int numerodeentradasameter) {
+	public boolean comprobarLimiteEntradas2(Cliente c,int id_sala, String titulo, int numerodeentradasameter, BBDD bd, String horario) {
 	    int contador = 0;
 
 	    for (Entrada e : c.getCarrito_de_compra().keySet()) {
@@ -248,7 +248,7 @@ public class Aniadir_carrito extends JFrame {
 	            contador = c.getCarrito_de_compra().get(e);
 	        }
 	    }
-
+	    contador += bd.contarEntradasCompradas(c, horario, titulo);
 	    return (contador + numerodeentradasameter) < 5;
 	}
 	
