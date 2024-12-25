@@ -137,6 +137,45 @@ public class Ventana_carrito extends JFrame{
 					c.setBackground(tablacarrito.getSelectionBackground());
 					c.setForeground(tablacarrito.getSelectionForeground());
 				}
+				String filtroTexto = filtrar.getText().toLowerCase();
+		        String columnaSeleccionada = (String) combo.getSelectedItem();
+
+		        boolean resaltar = false;
+		        if (filtroTexto != null && !filtroTexto.isEmpty()) {
+		            switch (columnaSeleccionada) {
+		                case "NOMBRE DE PELICULA":
+		                    resaltar = column == 0 && value.toString().toLowerCase().contains(filtroTexto);
+		                    break;
+		                case "SALA":
+		                    resaltar = column == 1 && value.toString().toLowerCase().contains(filtroTexto);
+		                    break;
+		                case "HORARIO":
+		                    resaltar = column == 2 && value.toString().toLowerCase().contains(filtroTexto);
+		                    break;
+		                case "PRECIO TOTAL":
+		                    resaltar = column == 3 && value.toString().toLowerCase().contains(filtroTexto);
+		                    break;
+		                case "NUMERO DE ENTRADAS":
+		                    resaltar = column == 4 && value.toString().toLowerCase().contains(filtroTexto);
+		                    break;
+		            }
+		        }
+
+		        if (resaltar) {
+		            String texto = value.toString();
+		            int inicio = texto.toLowerCase().indexOf(filtroTexto);
+		            int fin = inicio + filtroTexto.length();
+		            StringBuilder resaltadoHtml = new StringBuilder("<html>");
+		            resaltadoHtml.append(texto, 0, inicio)
+		                         .append("<span style='background-color:yellow;color:red;'>")
+		                         .append(texto.substring(inicio, fin))
+		                         .append("</span>")
+		                         .append(texto.substring(fin))
+		                         .append("</html>");
+		            c.setText(resaltadoHtml.toString());
+		        } else if (!isSelected) {
+		            c.setText(value.toString());
+		        }
 				return c;
 			}
 		});;

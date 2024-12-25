@@ -284,9 +284,10 @@ public class BBDD {
                  PreparedStatement insertStmt3 = con.prepareStatement(insertCarrito);
                  PreparedStatement insertStmt4 = con.prepareStatement(insertEntrada);
                  PreparedStatement insertStmt5 = con.prepareStatement(insertHorarios);
-            	 PreparedStatement insertStmt6 = con.prepareStatement(insertButacaHorario);) {
+            	 PreparedStatement insertStmt6 = con.prepareStatement(insertButacaHorario);
+            		) {
 
-                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute() && !insertStmt5.execute()&& !insertStmt6.execute()) {
+                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute() && !insertStmt5.execute() && !insertStmt6.execute()) {
                     logger.info("Se han insertado los datos correctamente.");
                 }
             } catch (Exception e) {
