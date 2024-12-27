@@ -12,11 +12,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -37,11 +40,11 @@ import domain.Entrada;
 public class Ventana_carrito extends JFrame{
 	private static final long serialVersionUID = 1L;
 
-	private JPanel pcentro,psur,pnorte,pfiltro,pizquierda, tablas, pizqarriba;
+	private JPanel pcentro,psur,pnorte,pfiltro,pizquierda, tablas, pizqarriba, pderecha;
 	private JTextField filtrar;
 	private JComboBox<String> combo;
 	private JLabel titulo,filtro, salario;
-	private JButton btncartelera,btnañadir,btncomprar;
+	private JButton btncartelera,btnañadir,btncomprar, btnañadirsaldo;
 	private JTable tablacarrito, tablaentradas;
 	private ModeloCarrito modelocarrito;
 	private ModeloEntradas modeloentrada;
@@ -59,12 +62,13 @@ public class Ventana_carrito extends JFrame{
 		pizquierda = new JPanel();
 		tablas = new JPanel(new GridLayout(2,1));
 		pizqarriba = new JPanel();
+		pderecha = new JPanel();
 		
 		filtrar = new JTextField(20);
 		
 		filtro = new JLabel("Filtrar por: ");
 		
-		salario = new JLabel("Salario disponible: " + String.format("%.2f", c.getSalario())+ "€   ");
+		salario = new JLabel("Saldo disponible: " + String.format("%.2f", c.getSalario())+ "€   ");
 		salario.setOpaque(true);
 		salario.setBackground(Color.LIGHT_GRAY);
 		Font fuente2 = new Font(getName(),Font.PLAIN , 15);
@@ -85,14 +89,46 @@ public class Ventana_carrito extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				bd.comprarCarrito3(c.getDni());
-				c.setCarrito_de_compra(new HashMap<Entrada, Integer>());
-				modelocarrito = new ModeloCarrito(c.getCarrito_de_compra(),bd);		
-				tablacarrito = new JTable(modelocarrito);
-				dispose();
-				vInicial.setVisible(true);
+				HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
+				float precioTotal = 0;
+				for(Entrada en: carrito.keySet()) {
+					float precio = 0;
+					for(Entrada entrada: bd.calcularPrecioTotal(en)) {
+						precio += entrada.CalcularPrecio(entrada.getEdad());
+					}
+					precioTotal += precio; 
+				}
+				if (precioTotal > c.getSalario()) {
+	                JOptionPane.showMessageDialog(null, "No tienes saldo suficiente", "SALDO INSUFICIENTE...", JOptionPane.WARNING_MESSAGE);
+				} else {
+					bd.comprarCarrito3(c.getDni());
+					c.setCarrito_de_compra(new HashMap<Entrada, Integer>());
+					modelocarrito = new ModeloCarrito(c.getCarrito_de_compra(),bd);		
+					tablacarrito = new JTable(modelocarrito);
+					dispose();
+					vInicial.setVisible(true);
+				}
+
 			}
 		});
+		btnañadirsaldo = new JButton("");
+		btnañadirsaldo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String result = JOptionPane.showInputDialog(null, "Introduce la cantidad que vas a depositar:", "AÑADIR SALDO", JOptionPane.INFORMATION_MESSAGE);
+				vActual.setVisible(false);
+				c.setSalario(c.getSalario() + Integer.parseInt(result));
+				bd.cambiarSalario(c.getSalario(), c.getDni());
+				new Tarjeta(vInicial);
+			}
+		});
+		ImageIcon img3 = new ImageIcon("resource/images/wallet.png");
+    	Image imagenOriginalcolumn3 = img3.getImage();
+		Image imagenRedimensionadacolumn3 = imagenOriginalcolumn3.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+		ImageIcon imgredimensionadacolumn3 = new ImageIcon(imagenRedimensionadacolumn3);
+		btnañadirsaldo.setIcon(imgredimensionadacolumn3);
+		
 		btnañadir = new JButton("");
 		btnañadir.addActionListener((e)-> {
 			new Aniadir_carrito(vI,cartelera,null,bd, c);
@@ -103,6 +139,7 @@ public class Ventana_carrito extends JFrame{
 		Image imagenRedimensionadacolumn = imagenOriginalcolumn.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
 		ImageIcon imgredimensionadacolumn = new ImageIcon(imagenRedimensionadacolumn);
 		btnañadir.setIcon(imgredimensionadacolumn);
+		
 		btncartelera = new JButton("");
 		btncartelera.addActionListener((e)-> {
 			vInicial.setVisible(true);
@@ -197,11 +234,14 @@ public class Ventana_carrito extends JFrame{
 		
 		pnorte.add(titulo, BorderLayout.CENTER);
 		pnorte.add(pizqarriba, BorderLayout.WEST);
-		pnorte.add(salario,BorderLayout.EAST);
+		pnorte.add(pderecha,BorderLayout.EAST);
 		
 		pizquierda.add(filtro);
 		pizquierda.add(filtrar);
 		pizquierda.add(combo);
+		
+		pderecha.add(salario);
+		pderecha.add(btnañadirsaldo);
 
 		filtrar.getDocument().addDocumentListener(new DocumentListener() {
 			

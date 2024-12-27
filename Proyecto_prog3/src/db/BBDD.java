@@ -230,22 +230,23 @@ public class BBDD {
                     + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/AvengersEndgame.png', '13,14', 1),\n"
                     + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/TheMatrix.png', '15,16', 1);";
             String insertHorarios = "INSERT OR IGNORE INTO Horarios (horario) VALUES\n"
-            		+ "('2024-10-11 16:00'),\n"//Inception
-            		+ "('2024-10-11 18:30'),\n"
-            		+ "('2024-10-11 17:00'),\n"//Godfather
-            		+ "('2024-10-11 20:30'),\n"
-            		+ "('2024-10-12 16:00'),\n"//Dune
-            		+ "('2024-10-12 19:30'),\n"
-            		+ "('2024-10-13 14:30'),\n"//Interstellar
-            		+ "('2024-10-13 19:00'),\n"
-            		+ "('2024-10-14 14:30'),\n"//Titanic
-            		+ "('2024-10-14 19:00'),\n"
-            		+ "('2024-10-15 16:00'),\n"//Pulp Fiction
-            		+ "('2024-10-15 20:00'),\n"
-            		+ "('2024-10-16 14:00'),\n"//EndGame
-            		+ "('2024-10-16 21:00'),\n"
-            		+ "('2024-10-17 17:00'),\n"//Matrix
-            		+ "('2024-10-17 20:00');";
+                    + "('2024-12-25 16:00'),\n"  // Inception
+                    + "('2024-12-25 18:30'),\n"
+                    + "('2024-12-25 17:00'),\n"  // Godfather
+                    + "('2024-12-25 20:30'),\n"
+                    + "('2024-12-26 16:00'),\n"  // Dune
+                    + "('2024-12-26 19:30'),\n"
+                    + "('2024-12-27 14:30'),\n"  // Interstellar
+                    + "('2024-12-27 19:00'),\n"
+                    + "('2024-12-28 14:30'),\n"  // Titanic
+                    + "('2024-12-28 19:00'),\n"
+                    + "('2024-12-29 16:00'),\n"  // Pulp Fiction
+                    + "('2024-12-29 20:00'),\n"
+                    + "('2024-12-30 14:00'),\n"  // EndGame
+                    + "('2024-12-30 21:00'),\n"
+                    + "('2024-12-31 17:00'),\n"  // Matrix
+                    + "('2024-12-31 20:00');";
+
             String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
                     + "('11111111A'),\n"
                     + "('22222222B'),\n"
@@ -1252,4 +1253,22 @@ public class BBDD {
  	    }
  	    return numeroentradas;
     }
+    public void cambiarSalario(float salario, String dni) {
+        String sql = "UPDATE Cliente SET salario = ? WHERE dni = ?";
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+            pStmt.setFloat(1, salario);
+            pStmt.setString(2, dni);
+            
+            int rowsAffected = pStmt.executeUpdate(); // Cambiar a executeUpdate()
+            if (rowsAffected > 0) {
+                logger.info("Salario cambiado correctamente");
+            } else {
+                logger.info(String.format("Cliente con dni = %s no encontrado", dni));
+            }
+        } catch (Exception e) {
+            logger.warning(String.format("Error al cambiar el salario: %s", e.getMessage()));
+        }
+    }
+
 }
