@@ -189,7 +189,7 @@ public class VentanaSeleccionarEntradas extends JFrame {
         setTitle("DeustoCine");
         setSize(1000, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setVisible(true);
     }
 }

@@ -9,85 +9,89 @@ public class Tarjeta extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private JFrame vActual, vInicial;
-    private JPanel leftPanel, rightPanel, cardPanel;
-    private JLabel titleLabel, amountLabel, emailLabel, cardInfoLabel;
-    private JTextField emailField, cardField, expiryField, cvcField;
-    private JButton acceptButton;
+    private JPanel pcentro, psur, poeste, peste, ptarjeta, pemail, pmonto;
+    private JLabel titulo, cant, lemail, infotarjeta;
+    private JTextField email, tarjeta, caducidad, cvc;
+    private JButton btnaceptar;
 
-    public Tarjeta(JFrame vI) {
+    public Tarjeta(JFrame vI, int cantidad) {
         vInicial = vI;
         vActual = this;
+        
+        setTitle("Hacer Pago");
+        setSize(400, 400);
+        setLocationRelativeTo(null);
+        ImageIcon imagen = new ImageIcon("resource/images/icono.png");
+        setIconImage(imagen.getImage());
 
-        // Configuración de la ventana principal
-        this.setTitle("Tarjeta");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(500, 400);
-        this.setLayout(new BorderLayout());
+        // Inicializar paneles y establecer bordes vacíos para espaciado uniforme
+        pcentro = new JPanel();
+        pcentro.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        psur = new JPanel();
+        psur.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        poeste = new JPanel();
+        poeste.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        peste = new JPanel();
+        peste.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pmonto = new JPanel(new GridLayout(2, 1));
+        pemail = new JPanel(new GridLayout(2, 1));
+        ptarjeta = new JPanel(new GridLayout(2, 1));
 
-        // Inicializar componentes
-        initComponents();
+        // Configurar etiquetas y campos de texto
+        titulo = new JLabel("Dinero a depositar:");
+        titulo.setHorizontalAlignment(JLabel.LEFT);
+        titulo.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        cant = new JLabel(String.valueOf(cantidad));
+        cant.setHorizontalAlignment(JLabel.LEFT);
+        cant.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        lemail = new JLabel("Correo electrónico:");
+        lemail.setHorizontalAlignment(JLabel.LEFT);
+        lemail.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        infotarjeta = new JLabel("Información de la tarjeta:");
+        infotarjeta.setHorizontalAlignment(JLabel.LEFT);
+        infotarjeta.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        email = new JTextField(20);
+        email.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        tarjeta = new JTextField("1234 1234 1234 1234");
+        tarjeta.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        caducidad = new JTextField("MM / AA");
+        caducidad.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        cvc = new JTextField("CVC");
+        cvc.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        // Panel para organizar los campos de tarjeta
+        JPanel tarjetaPanel = new JPanel(new GridLayout(1, 3, 5, 5));
+        tarjetaPanel.add(tarjeta);
+        tarjetaPanel.add(caducidad);
+        tarjetaPanel.add(cvc);
 
-        // Agregar los paneles al frame
-        this.add(leftPanel, BorderLayout.WEST);
-        this.add(rightPanel, BorderLayout.CENTER);
-        this.add(acceptButton, BorderLayout.SOUTH);
+        // Añadir componentes a los paneles correspondientes
+        pmonto.add(titulo);
+        pmonto.add(cant);
+        pemail.add(lemail);
+        pemail.add(email);
+        ptarjeta.add(infotarjeta);
+        ptarjeta.add(tarjetaPanel);
 
-        // Hacer la ventana visible
-        this.setVisible(true);
-    }
-
-    private void initComponents() {
-        // Panel izquierdo - Información del monto
-        leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        titleLabel = new JLabel("Pagar a Pruebas de cursos");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        amountLabel = new JLabel("120,00 €");
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 22));
-        amountLabel.setForeground(Color.BLACK);
-
-        leftPanel.add(titleLabel);
-        leftPanel.add(Box.createVerticalStrut(10)); // Espacio entre líneas
-        leftPanel.add(amountLabel);
-
-        // Panel derecho - Información de pago
-        rightPanel = new JPanel();
-        rightPanel.setLayout(new GridLayout(5, 1, 10, 10));
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        emailLabel = new JLabel("Correo electrónico:");
-        emailField = new JTextField();
-
-        cardInfoLabel = new JLabel("Información de la tarjeta:");
-        cardField = new JTextField("1234 1234 1234 1234");
-        expiryField = new JTextField("MM / AA");
-        cvcField = new JTextField("CVC");
-
-        cardPanel = new JPanel(new GridLayout(1, 3, 5, 0));
-        cardPanel.add(cardField);
-        cardPanel.add(expiryField);
-        cardPanel.add(cvcField);
-
-        rightPanel.add(emailLabel);
-        rightPanel.add(emailField);
-        rightPanel.add(cardInfoLabel);
-        rightPanel.add(cardPanel);
-
-        // Botón de aceptar
-        acceptButton = new JButton("Aceptar");
-        acceptButton.setFont(new Font("Arial", Font.BOLD, 14));
-        acceptButton.addActionListener(new ActionListener() {
+        // Configuración del botón Aceptar
+        btnaceptar = new JButton("Aceptar");
+        btnaceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Validar campos y mostrar mensaje
-                String email = emailField.getText();
-                String cardNumber = cardField.getText();
-                String expiryDate = expiryField.getText();
-                String cvc = cvcField.getText();
+                String em = email.getText();
+                String tar = tarjeta.getText();
+                String cadu = caducidad.getText();
+                String Cvc = cvc.getText();
 
-                if (email.isEmpty() || cardNumber.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
+                if (em.isEmpty() || tar.isEmpty() || cadu.isEmpty() || Cvc.isEmpty()) {
                     JOptionPane.showMessageDialog(vActual, "Por favor, completa todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(vActual, "Pago realizado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -99,5 +103,24 @@ public class Tarjeta extends JFrame {
                 }
             }
         });
+
+        // Añadir paneles al marco de la ventana
+        getContentPane().add(pcentro, BorderLayout.CENTER);
+        getContentPane().add(psur, BorderLayout.SOUTH);
+        getContentPane().add(poeste, BorderLayout.WEST);
+        getContentPane().add(peste, BorderLayout.EAST);
+
+        // Organizar componentes en el panel central
+        pcentro.setLayout(new GridLayout(6, 1));
+        pcentro.add(pmonto);
+        pcentro.add(pemail);
+        pcentro.add(ptarjeta);
+
+        // Añadir botón Aceptar al panel sur
+        psur.add(btnaceptar);
+
+        // Configuración final de la ventana
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     }
 }

@@ -152,7 +152,7 @@ public class Ventana_elegirbutaca extends JFrame {
         setTitle("DeustoCine");
         setSize(900, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setVisible(true);
     }
 }

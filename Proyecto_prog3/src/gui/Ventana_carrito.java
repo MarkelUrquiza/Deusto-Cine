@@ -120,7 +120,7 @@ public class Ventana_carrito extends JFrame{
 				vActual.setVisible(false);
 				c.setSalario(c.getSalario() + Integer.parseInt(result));
 				bd.cambiarSalario(c.getSalario(), c.getDni());
-				new Tarjeta(vInicial);
+				new Tarjeta(vInicial, Integer.parseInt(result));
 			}
 		});
 		ImageIcon img3 = new ImageIcon("resource/images/wallet.png");
