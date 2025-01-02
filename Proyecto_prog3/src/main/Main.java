@@ -9,8 +9,8 @@ public class Main {
 
 		BBDD bd = new BBDD();
 		bd.crearBBDD();
-		bd.insertardatosporDefecto();
 		bd.inicilizarButacasContxt();
+		bd.insertardatosporDefecto();
         
         //new Ventana_elegirbutaca(bd);
 		new Inicio_sesion(bd);

@@ -76,6 +76,7 @@ public class Ventana_inicial extends JFrame{
 		pderecha.add(cerrarsesion);
 		cerrarsesion.setFont(fuentebtn);
 		cerrarsesion.addActionListener(e -> {
+			bd.CerrarSesion(c.getDni());
 			dispose();
 			vAnterior.setVisible(true);
 		});

@@ -229,23 +229,24 @@ public class BBDD {
                     + "(2, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/PulpFiction.png', '11,12', 0),\n"
                     + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/AvengersEndgame.png', '13,14', 1),\n"
                     + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/TheMatrix.png', '15,16', 1);";
+           
             String insertHorarios = "INSERT OR IGNORE INTO Horarios (horario) VALUES\n"
-                    + "('2024-12-25 16:00'),\n"  // Inception
-                    + "('2024-12-25 18:30'),\n"
-                    + "('2024-12-25 17:00'),\n"  // Godfather
-                    + "('2024-12-25 20:30'),\n"
-                    + "('2024-12-26 16:00'),\n"  // Dune
-                    + "('2024-12-26 19:30'),\n"
-                    + "('2024-12-27 14:30'),\n"  // Interstellar
-                    + "('2024-12-27 19:00'),\n"
-                    + "('2024-12-28 14:30'),\n"  // Titanic
-                    + "('2024-12-28 19:00'),\n"
-                    + "('2024-12-29 16:00'),\n"  // Pulp Fiction
-                    + "('2024-12-29 20:00'),\n"
-                    + "('2024-12-30 14:00'),\n"  // EndGame
-                    + "('2024-12-30 21:00'),\n"
-                    + "('2024-12-31 17:00'),\n"  // Matrix
-                    + "('2024-12-31 20:00');";
+                    + "('2024-12-31 16:00'),\n"  // Inception
+                    + "('2025-01-01 18:30'),\n"
+                    + "('2025-01-01 17:00'),\n"  // Godfather
+                    + "('2025-01-01 20:30'),\n"
+                    + "('2025-01-02 16:00'),\n"  // Dune
+                    + "('2025-01-02 19:30'),\n"
+                    + "('2025-01-03 14:30'),\n"  // Interstellar
+                    + "('2025-01-03 19:00'),\n"
+                    + "('2025-01-04 14:30'),\n"  // Titanic
+                    + "('2025-01-04 19:00'),\n"
+                    + "('2025-01-05 16:00'),\n"  // Pulp Fiction
+                    + "('2025-01-05 20:00'),\n"
+                    + "('2025-01-06 14:00'),\n"  // EndGame
+                    + "('2025-01-06 21:00'),\n"
+                    + "('2025-01-07 17:00'),\n"  // Matrix
+                    + "('2025-01-07 20:00');";
 
             String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
                     + "('11111111A'),\n"
@@ -1037,97 +1038,219 @@ public class BBDD {
 
 
 	public String InicioSesion(String dni) {
-	    String sql = "INSERT INTO InicioSesion (horario_inicio_sesion, cliente_dni) VALUES (?, ?)";
-	    SimpleDateFormat horaActual = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-	    String horarioActual = horaActual.format(new Date());
+	    String selectSql = "SELECT horario_inicio_sesion FROM InicioSesion WHERE cliente_dni = ?";
+	    String insertSql = "INSERT INTO InicioSesion (horario_inicio_sesion, cliente_dni) VALUES (?, ?)";
+	    String updateSql = "UPDATE InicioSesion SET horario_inicio_sesion = ? WHERE cliente_dni = ?";
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	    String horarioActual = LocalDateTime.now().format(formatter);
+
 	    try (Connection conn = DriverManager.getConnection(connectionString);
-	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+	         PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+	         PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
 
-	        pstmt.setString(1, horarioActual);
-	        pstmt.setString(2, dni);
+	        selectStmt.setString(1, dni);
+	        ResultSet rs = selectStmt.executeQuery();
 
-	        pstmt.executeUpdate();
-	        logger.info(String.format("Sesión iniciada correctamente para el cliente con DNI: %s", dni));
+	        if (rs.next()) {
+	            // Registro ya existe: actualizar
+	            updateStmt.setString(1, horarioActual);
+	            updateStmt.setString(2, dni);
+	            updateStmt.executeUpdate();
+	            logger.info(String.format("Horario de inicio actualizado para cliente con DNI: %s", dni));
+	        } else {
+	            // Insertar nuevo registro
+	            insertStmt.setString(1, horarioActual);
+	            insertStmt.setString(2, dni);
+	            insertStmt.executeUpdate();
+	            logger.info(String.format("Sesión iniciada correctamente para cliente con DNI: %s", dni));
+	        }
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al insertar inicio de sesión: %s", e.getMessage()));
 	    }
 	    return horarioActual;
 	}
 
-    public void CerrarSesion(String dni) {
-        String sql = "DELETE FROM InicioSesion WHERE cliente_dni = ?";
 
-        try (Connection conn = DriverManager.getConnection(connectionString);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	public String CerrarSesion(String dni) {
+	    String sql = "DELETE FROM InicioSesion WHERE cliente_dni = ?";
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	    String horarioActual = LocalDateTime.now().format(formatter);
 
-        	pstmt.setString(1, dni);
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.executeUpdate();
+	        pstmt.setString(1, dni);
 
-            logger.info(String.format("Cierre de sesión exitoso para cliente DNI: %s", dni));
-            
-        } catch (Exception e) {
-            logger.warning(String.format("Error al cerrar sesión: %s", e.getMessage()));
-        }
-    }
-    public void eliminarHorariosPasados(String horarioInicioSesion) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+	        pstmt.executeUpdate();
+	        logger.info(String.format("Cierre de sesión exitoso para cliente DNI: %s a las %s", dni, horarioActual));
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al cerrar sesión: %s", e.getMessage()));
+	    }
+	    return horarioActual;
+	}
 
-        try {
-            LocalDateTime inicioSesion = LocalDateTime.parse(horarioInicioSesion, formatter);
-            String selectSql = "SELECT id, horarios FROM Pelicula";
-            String updateSql = "UPDATE Pelicula SET horarios = ? WHERE id = ?";
-            String deleteSql = "DELETE FROM Horarios WHERE horario < ?";
+	public void eliminarHorariosPasados(String horarioInicioSesion) {
+	    List<String> horariosPasados = obtenerHorariosPasados(horarioInicioSesion);
+	    if (!horariosPasados.isEmpty()) {
+	        eliminarHorariosDeTablasRelacionadas(horariosPasados);
+	        actualizarPeliculasYEliminarSiEsNecesario(horariosPasados);
+	        eliminarHorariosDeTabla(horariosPasados);
+	        logger.info("Horarios pasados y todos los datos relacionados han sido eliminados.");
+	    } else {
+	        logger.info("No hay horarios pasados para eliminar.");
+	    }
+	}
 
-            try (Connection conn = DriverManager.getConnection(connectionString);
-                 PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-                 PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+	private List<String> obtenerHorariosPasados(String horarioInicioSesion) {
+	    List<String> horariosPasados = new ArrayList<>();
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-                ResultSet rs = selectStmt.executeQuery();
+	    try {
+	        LocalDateTime inicioSesion = LocalDateTime.parse(horarioInicioSesion, formatter);
+	        String selectSql = "SELECT id FROM Horarios WHERE horario < ?";
 
-                while (rs.next()) {
-                    int peliculaId = rs.getInt("id");
-                    String horariosStr = rs.getString("horarios");
+	        try (Connection conn = DriverManager.getConnection(connectionString);
+	             PreparedStatement pstmt = conn.prepareStatement(selectSql)) {
 
-                    if (horariosStr == null || horariosStr.trim().isEmpty()) {
-                        continue;
-                    }
+	            pstmt.setString(1, inicioSesion.format(formatter));
+	            ResultSet rs = pstmt.executeQuery();
 
-                    String[] horarios = horariosStr.split(",");
-                    StringBuilder horariosActualizados = new StringBuilder();
+	            while (rs.next()) {
+	                horariosPasados.add(String.valueOf(rs.getInt("id")));
+	            }
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al obtener horarios pasados: %s", e.getMessage()));
+	    }
 
-                    for (String h : horarios) {
-                        h = h.trim();
-                        try {
-                            LocalDateTime horario = LocalDateTime.parse(h, formatter);
-                            if (horario.isAfter(inicioSesion)) {
-                                if (horariosActualizados.length() > 0) {
-                                    horariosActualizados.append(",");
-                                }
-                                horariosActualizados.append(h);
-                            }
-                        } catch (Exception e) {
-                            logger.warning(String.format("Horario inválido '%s' ignorado: %s", h, e.getMessage()));
-                        }
-                    }
+	    return horariosPasados;
+	}
 
-                    updateStmt.setString(1, horariosActualizados.toString());
-                    updateStmt.setInt(2, peliculaId);
-                    updateStmt.executeUpdate();
-                }
+	private void eliminarHorariosDeTablasRelacionadas(List<String> horariosPasados) {
+	    eliminarEntradasPorHorarios(horariosPasados);
+	    eliminarEntradasCompradasPorHorarios(horariosPasados);
+	    eliminarButacasPorHorarios(horariosPasados);
+	}
 
-                deleteStmt.setString(1, inicioSesion.format(formatter));
-                deleteStmt.executeUpdate();
-                logger.info("Horarios pasados eliminados");
+	private void eliminarEntradasPorHorarios(List<String> horariosPasados) {
+	    String deleteSql = "DELETE FROM Entrada WHERE id_horario = ?";
 
-            } catch (Exception e) {
-                logger.warning(String.format("Error al eliminar horarios pasados: %s", e.getMessage()));
-            }
-        } catch (Exception e) {
-            logger.warning(String.format("Error al analizar la fecha de inicio de sesión: %s", e.getMessage()));
-        }
-    }
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+	        for (String horarioId : horariosPasados) {
+	            deleteStmt.setInt(1, Integer.parseInt(horarioId));
+	            deleteStmt.executeUpdate();
+	            logger.info(String.format("Entradas asociadas al horario con ID %s eliminadas.", horarioId));
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al eliminar entradas por horarios pasados: %s", e.getMessage()));
+	    }
+	}
+
+	private void eliminarEntradasCompradasPorHorarios(List<String> horariosPasados) {
+	    String deleteSql = "DELETE FROM EntradasCompradas WHERE id_horario = ?";
+
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+	        for (String horarioId : horariosPasados) {
+	            deleteStmt.setInt(1, Integer.parseInt(horarioId));
+	            deleteStmt.executeUpdate();
+	            logger.info(String.format("Entradas compradas asociadas al horario con ID %s eliminadas.", horarioId));
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al eliminar entradas compradas por horarios pasados: %s", e.getMessage()));
+	    }
+	}
+
+	private void eliminarButacasPorHorarios(List<String> horariosPasados) {
+	    String deleteSql = "DELETE FROM Butaca_Horario WHERE id_horario = ?";
+
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+	        for (String horarioId : horariosPasados) {
+	            deleteStmt.setInt(1, Integer.parseInt(horarioId));
+	            deleteStmt.executeUpdate();
+	            logger.info(String.format("Asociaciones de butacas con el horario ID %s eliminadas.", horarioId));
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al eliminar asociaciones de butacas por horarios pasados: %s", e.getMessage()));
+	    }
+	}
+
+	private void actualizarPeliculasYEliminarSiEsNecesario(List<String> horariosPasados) {
+	    String selectSql = "SELECT id, horarios FROM Pelicula";
+	    String updateSql = "UPDATE Pelicula SET horarios = ? WHERE id = ?";
+	    String deleteSql = "DELETE FROM Pelicula WHERE id = ?";
+
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+	         PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+	         PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+	        ResultSet rs = selectStmt.executeQuery();
+
+	        while (rs.next()) {
+	            int peliculaId = rs.getInt("id");
+	            String horariosStr = rs.getString("horarios");
+
+	            if (horariosStr == null || horariosStr.trim().isEmpty()) {
+	                continue;
+	            }
+
+	            String[] horarios = horariosStr.split(",");
+	            StringBuilder horariosActualizados = new StringBuilder();
+	            boolean actualizado = false;
+
+	            for (String h : horarios) {
+	                h = h.trim();
+	                if (!horariosPasados.contains(h)) {
+	                    if (horariosActualizados.length() > 0) {
+	                        horariosActualizados.append(",");
+	                    }
+	                    horariosActualizados.append(h);
+	                } else {
+	                    actualizado = true;
+	                }
+	            }
+
+	            if (horariosActualizados.length() == 0) {
+	                // Si los horarios están vacíos, eliminar la película.
+	                deleteStmt.setInt(1, peliculaId);
+	                deleteStmt.executeUpdate();
+	                logger.info(String.format("Película con ID %d eliminada debido a la falta de horarios.", peliculaId));
+	            } else if (actualizado) {
+	                // Si se actualizaron los horarios, actualizarlos en la base de datos.
+	                updateStmt.setString(1, horariosActualizados.toString());
+	                updateStmt.setInt(2, peliculaId);
+	                updateStmt.executeUpdate();
+	                logger.info(String.format("Película con ID %d actualizada con horarios: %s", peliculaId, horariosActualizados));
+	            }
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al actualizar o eliminar películas: %s", e.getMessage()));
+	    }
+	}
+
+	private void eliminarHorariosDeTabla(List<String> horariosPasados) {
+	    String deleteSql = "DELETE FROM Horarios WHERE id = ?";
+
+	    try (Connection conn = DriverManager.getConnection(connectionString);
+	         PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+	        for (String horarioId : horariosPasados) {
+	            deleteStmt.setInt(1, Integer.parseInt(horarioId));
+	            deleteStmt.executeUpdate();
+	            logger.info(String.format("Horario con ID %s eliminado de la tabla Horarios.", horarioId));
+	        }
+	    } catch (Exception e) {
+	        logger.warning(String.format("Error al eliminar horarios pasados de la tabla Horarios: %s", e.getMessage()));
+	    }
+	}
+
 
     public String BuscarHorarioPorId(int id) {
     	String horario = null;

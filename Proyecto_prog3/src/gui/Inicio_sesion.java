@@ -89,17 +89,21 @@ public class Inicio_sesion extends JFrame {
                 nom.setText("");
                 con.setText("");
             } else {
-                Cartelera cartelera = new Cartelera();
-                cartelera.setCartelera(cartelera.cargarCartelera(bd));
+               
                 if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
                 	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
+
+                	String h = bd.InicioSesion(c.getDni());
+                	System.out.println(h);
+                    bd.eliminarHorariosPasados(h);
+
+                    
                 	if (c.getCarrito_de_compra() == null ) {
                 	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
                 	}
-                	/*String h = bd.InicioSesion(c.getDni());
-                	System.out.println(h);
-                    bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));*/
-                	
+                    Cartelera cartelera = new Cartelera();
+                    cartelera.setCartelera(cartelera.cargarCartelera(bd));
+                    
                     dispose();
                     JProgressBar progressBar = new JProgressBar(0, 100);
                     progressBar.setValue(0);
@@ -140,59 +144,66 @@ public class Inicio_sesion extends JFrame {
         // Asociar una tecla (ej. "Enter") a una acción
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "Iniciar sesion");
         actionMap.put("Iniciar sesion", new AbstractAction() {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void actionPerformed(ActionEvent e) {
-            	 if (con.getText().isEmpty() || nom.getText().isEmpty()) {
-                     JOptionPane.showMessageDialog(null, "Rellena todas las partes", "CUIDADO!!!", JOptionPane.WARNING_MESSAGE);
-                     nom.setText("");
-                     con.setText("");
-                 } else {
-                     Cartelera cartelera = new Cartelera();
-                     cartelera.setCartelera(cartelera.cargarCartelera(bd));
-                     if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
-                     	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
-                     	if (c.getCarrito_de_compra() == null ) {
-                     	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
-                     	}
-                    	/*String h = bd.InicioSesion(c.getDni());
+            	if (con.getText().isEmpty() || nom.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Rellena todas las partes", "CUIDADO!!!", JOptionPane.WARNING_MESSAGE);
+                    nom.setText("");
+                    con.setText("");
+                } else {
+                   
+                    if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
+                    	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
+
+                    	String h = bd.InicioSesion(c.getDni());
                     	System.out.println(h);
-                        bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));*/
+                        bd.eliminarHorariosPasados(h);
+
                         
-                         dispose();
-                         JProgressBar progressBar = new JProgressBar(0, 100);
-                         progressBar.setValue(0);
-                         progressBar.setStringPainted(true);
+                    	if (c.getCarrito_de_compra() == null ) {
+                    	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
+                    	}
+                        Cartelera cartelera = new Cartelera();
+                        cartelera.setCartelera(cartelera.cargarCartelera(bd));
+                        
+                        dispose();
+                        JProgressBar progressBar = new JProgressBar(0, 100);
+                        progressBar.setValue(0);
+                        progressBar.setStringPainted(true);
 
-                         JPanel panel = new JPanel();
-                         panel.setLayout(new BorderLayout());
-                         panel.add(progressBar, BorderLayout.CENTER);
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BorderLayout());
+                        panel.add(progressBar, BorderLayout.CENTER);
 
-                         JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-                         JDialog dialog = optionPane.createDialog("Cargando...");
-                         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-                         
-                         new Thread(() -> {
-                             int progress = 0;
-                             try {
-                                 while (progress <= 100) {
-                                     progressBar.setValue(progress);
-                                     Thread.sleep(30);
-                                     progress += 1;
-                                 }
-                             } catch (InterruptedException ex) {
-                                 Thread.currentThread().interrupt();
-                             } finally {
-                                 dialog.dispose();
-                             }
-                         }).start();
+                        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                        JDialog dialog = optionPane.createDialog("Cargando...");
+                        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                        
+                        new Thread(() -> {
+                            int progress = 0;
+                            try {
+                                while (progress <= 100) {
+                                    progressBar.setValue(progress);
+                                    Thread.sleep(30);
+                                    progress += 1;
+                                }
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                            } finally {
+                                dialog.dispose();
+                            }
+                        }).start();
+                        
+                        dialog.setVisible(true);
+                    	new Ventana_inicial(vActual,cartelera, c, bd);
 
-                         dialog.setVisible(true);
-                         //bd.eliminarHorariosPasados(bd.InicioSesion(c.getDni()));
-                 
-                     	new Ventana_inicial(vActual,cartelera, c, bd);
-
-                     }
-                 }
+                    }
+                }
             }
         });
         Font fuente = new Font(getName(), Font.BOLD, 16);

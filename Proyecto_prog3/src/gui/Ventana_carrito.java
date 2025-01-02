@@ -11,8 +11,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,6 +43,7 @@ import domain.Butaca;
 import domain.Cartelera;
 import domain.Cliente;
 import domain.Entrada;
+import domain.Pelicula;
 
 public class Ventana_carrito extends JFrame{
 	private static final long serialVersionUID = 1L;
@@ -44,7 +52,7 @@ public class Ventana_carrito extends JFrame{
 	private JTextField filtrar;
 	private JComboBox<String> combo;
 	private JLabel titulo,filtro, salario;
-	private JButton btncartelera,btnañadir,btncomprar, btnañadirsaldo;
+	private JButton btncartelera,btnañadir,btncomprar, btnañadirsaldo, btncombi;
 	private JTable tablacarrito, tablaentradas;
 	private ModeloCarrito modelocarrito;
 	private ModeloEntradas modeloentrada;
@@ -82,7 +90,7 @@ public class Ventana_carrito extends JFrame{
 		
 		String [] combotitles = {"NOMBRE DE PELICULA","SALA","FECHA","PRECIO"};
 		combo = new JComboBox<String>(combotitles);
-		combo.setSelectedItem(combotitles[0]);
+		combo.setSelectedItem(combotitles[0]);	
 		
 		btncomprar = new JButton("Comprar");
 		btncomprar.addActionListener(new ActionListener() {
@@ -150,6 +158,17 @@ public class Ventana_carrito extends JFrame{
 		Image imagenRedimensionadacolumn2 = imagenOriginalcolumn2.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
 		ImageIcon imgredimensionadacolumn2 = new ImageIcon(imagenRedimensionadacolumn2);
 		btncartelera.setIcon(imgredimensionadacolumn2);
+		
+		btncombi = new JButton("Combinaciones");
+		btncombi.addActionListener((e)-> {
+			List<Integer> edades = Arrays.asList(3, 10, 18, 65);
+			String s = "";
+			for(List<String> i: combinaciones(edades, c.getSalario())) {
+				s += i + "\n";
+			}
+			
+			JOptionPane.showConfirmDialog(null,"Estas son las combinaciones de edades que se pueden hacer segun tu saldo:\n"+ s,"Combinaciones de Edades",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE);
+		});
 		
 		HashMap<Entrada, Integer> carrito = filtrarEntradasUnicas(c.getCarrito_de_compra());
 
@@ -347,6 +366,7 @@ public class Ventana_carrito extends JFrame{
 		pizqarriba.add(btnañadir);
 		
 		psur.add(btncomprar);
+		psur.add(btncombi);
 		
 		tablas.add(scrollTabla);
 		tablas.add(scrollentradas);
@@ -457,5 +477,74 @@ public class Ventana_carrito extends JFrame{
 	    
 		return carritofiltrado;
 	}
+	
+	 public static List<List<String>> combinaciones(List<Integer> edades, float saldo) {
+	        Set<List<String>> resultado = new HashSet<>();
+	        combinacionesR(edades, new ArrayList<>(), resultado, saldo, 0, 0);
 
+	        // Convertimos el Set a una lista y eliminamos el primer elemento si está vacío
+	        List<List<String>> listaResultado = new ArrayList<>(resultado);
+	        listaResultado.removeIf(List::isEmpty); // Eliminamos combinaciones vacías.
+
+	        return listaResultado;
+	    }
+
+	    public static void combinacionesR(List<Integer> edades, List<Integer> aux, Set<List<String>> result, float saldo, float suma, int start) {
+	        if (suma > saldo) {
+	            return; // Terminamos si excedemos el saldo.
+	        }
+
+	        // Agregamos una copia de la combinación actual transformada en rangos si la suma es válida.
+	        if (suma <= saldo) {
+	            List<String> copia = new ArrayList<>();
+	            for (int edad : aux) {
+	                copia.add(edades(edad)); // Convertimos cada edad a su rango.
+	            }
+	            Collections.sort(copia); // Ordenamos para evitar duplicados.
+	            result.add(copia); // El Set se encarga de eliminar duplicados.
+	        }
+
+	        // Iteramos sobre las edades disponibles.
+	        for (int i = start; i < edades.size(); i++) {
+	            float precio = calcularPrecio(edades.get(i));
+	            if (precio < 0) continue; // Ignoramos edades con precios inválidos.
+
+	            aux.add(edades.get(i));
+	            suma += precio;
+
+	            combinacionesR(edades, aux, result, saldo, suma, i + 1);
+
+	            // Backtracking: deshacemos el último paso.
+	            suma -= precio;
+	            aux.remove(aux.size() - 1);
+	        }
+	    }
+
+	    public static float calcularPrecio(int edad) {
+	        if (edad < 3) {
+	            return 0; // Gratis.
+	        } else if (edad < 10) {
+	            return 0; // Precio gratuito para niños.
+	        } else if (edad < 18) {
+	            return 8; // Precio para jóvenes.
+	        } else if (edad < 65) {
+	            return 12; // Precio para adultos.
+	        } else {
+	            return 8; // Precio para seniors.
+	        }
+	    }
+
+	    public static String edades(int edad) {
+	        if (edad < 3) {
+	            return "0-2";
+	        } else if (edad < 10) {
+	            return "3-9"; 
+	        } else if (edad < 18) {
+	            return "10-17";
+	        } else if (edad < 65) {
+	            return "18-64";
+	        } else {
+	            return "65-...";
+	        }
+	    }
 }
