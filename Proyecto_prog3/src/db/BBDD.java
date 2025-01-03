@@ -1393,5 +1393,108 @@ public class BBDD {
             logger.warning(String.format("Error al cambiar el salario: %s", e.getMessage()));
         }
     }
+    public List<Pelicula> cogerPelis() {
+    	String sql = "SELECT * FROM Pelicula";
+    	List<Pelicula> pelis = new ArrayList<Pelicula>();
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+        	ResultSet rs = pStmt.executeQuery();
+        	while(rs.next()) {
+        		boolean tresd = false;
+        		if(rs.getInt("tresd")==1) tresd = true;
+        		Pelicula p = new Pelicula(rs.getInt("id_sala"), rs.getString("titulo"), Genero.valueOf(rs.getString("tipo")),
+        				rs.getFloat("duracion"), rs.getString("director"), rs.getString("rutafoto"), tresd, rs.getString("horarios"));
+        		pelis.add(p);
+        	}
+        	
+        } catch (Exception e) {
+            logger.warning(String.format("Error al devolver las peliculas: %s", e.getMessage()));
+        }
+        return pelis;
+    }
+    public void cambiarDuracionPeli(float duracion, String horarios) {
+        String sql = "UPDATE Pelicula SET duracion = ? WHERE horarios = ?";
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+            pStmt.setFloat(1, duracion);
+            pStmt.setString(2, horarios);
+            
+            int r = pStmt.executeUpdate();
+            if (r > 0) {
+                logger.info("Duracion cambiada correctamente");
+            } else {
+                logger.info(String.format("No se encontro ninguna pelicula con horarios = %s", horarios));
+            }
+        } catch (Exception e) {
+            logger.warning(String.format("Error al cambiar la duracion: %s", e.getMessage()));
+        }
+    }
+    public void meterPelicula(Pelicula p) {
+        String sql = "INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES (?,?,?,?,?,?,?,?)";
 
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement Stmt = con.prepareStatement(sql)) {
+			boolean tresd = false;
+			if (p.isTresd()) {
+				tresd = true;
+			}
+			
+			Stmt.setInt(1, p.getId_sala());
+			Stmt.setString(2, p.getTitulo());
+			Stmt.setString(3, p.getDirector());
+			Stmt.setString(4, p.getTipo().toString());
+			Stmt.setFloat(5, p.getDuracion());
+			Stmt.setString(6, p.getRutafoto());
+			Stmt.setString(7, p.getHorarios());
+			Stmt.setBoolean(8, tresd);
+				
+			if (!Stmt.execute()) {
+				logger.info(String.format("Pelicula con titulo: %s insertado en la BBDD", p.getTitulo()));
+		    }
+			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al insertar nueva Pelicula: %s", ex.getMessage()));
+		}			
+		
+	}
+    public boolean TituloExiste(String titulo) {
+        String sql = "SELECT * FROM Pelicula WHERE titulo = ?";
+        boolean enc = false;
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+            pStmt.setString(1, titulo);
+            
+            ResultSet rs = pStmt.executeQuery();
+            if (rs.next()) {
+            	enc = true;
+            }
+        } catch (Exception e) {
+            logger.warning(String.format("Error al cambiar la duracion: %s", e.getMessage()));
+        }
+        return enc;
+    }
+    public boolean eliminarPelicula(String titulo) {
+        String Sql = "DELETE FROM Pelicula WHERE titulo = ?";
+
+        try (Connection conn = DriverManager.getConnection(connectionString);
+             PreparedStatement stmt = conn.prepareStatement(Sql)) {
+            
+            stmt.setString(1, titulo);
+            
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                logger.info(String.format("Película '%s' eliminada correctamente", titulo));
+                return true;
+            } else {
+                logger.warning(String.format("No se encontró una película con el título '%s'", titulo));
+                return false;
+            }
+        } catch (Exception e) {
+            logger.warning(String.format("Error al eliminar película: %s", e.getMessage()));
+            return false;
+        }
+    }
+
+    
 }

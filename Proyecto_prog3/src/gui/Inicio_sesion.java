@@ -46,7 +46,6 @@ public class Inicio_sesion extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
 
-        // Inicializar paneles y establecer borde vacío para espaciado uniforme
         pcentro = new JPanel();
         pcentro.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         psur = new JPanel();
@@ -58,7 +57,6 @@ public class Inicio_sesion extends JFrame {
         pnombre = new JPanel(new GridLayout(2, 1));
         pcontra = new JPanel(new GridLayout(2, 1));
 
-        // Configurar etiquetas y campos de texto
         nombre = new JLabel("Introduce tu nombre:");
         nombre.setHorizontalAlignment(JLabel.LEFT);
         nombre.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -135,13 +133,17 @@ public class Inicio_sesion extends JFrame {
                     dialog.setVisible(true);
                 	new Ventana_inicial(vActual,cartelera, c, bd);
 
+                } else {
+                	if (nom.getText().equals("admin") && con.getText().equals("admin")) {
+						dispose();
+						new VentanaAdmin(vActual, bd);
+					}
                 }
             }
         });
         InputMap inputMap = btninicio.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = btninicio.getActionMap();
 
-        // Asociar una tecla (ej. "Enter") a una acción
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "Iniciar sesion");
         actionMap.put("Iniciar sesion", new AbstractAction() {
             /**
@@ -202,7 +204,14 @@ public class Inicio_sesion extends JFrame {
                         dialog.setVisible(true);
                     	new Ventana_inicial(vActual,cartelera, c, bd);
 
+                    } else {
+                    	if (nom.getText().equals("admin") && con.getText().equals("admin")) {
+    						dispose();
+    						new VentanaAdmin(vActual, bd);
+    					}
                     }
+                    nom.setText("");
+                    con.setText("");
                 }
             }
         });
@@ -216,13 +225,11 @@ public class Inicio_sesion extends JFrame {
         nom.setFont(otra);
         con.setFont(otra);
 
-        // Añadir paneles al marco de la ventana
         getContentPane().add(pcentro, BorderLayout.CENTER);
         getContentPane().add(psur, BorderLayout.SOUTH);
         getContentPane().add(poeste, BorderLayout.WEST);
         getContentPane().add(peste, BorderLayout.EAST);
 
-        // Organizar componentes en el panel central
         pcentro.setLayout(new GridLayout(4, 1));
         pcentro.add(nombre);
         pcentro.add(pnombre);
@@ -232,27 +239,21 @@ public class Inicio_sesion extends JFrame {
         pnombre.add(nom);
         pcontra.add(con);
 
-        // Agregar botones en el panel inferior
         psur.add(btninicio);
         psur.add(btnregistro);
         
-        // Configuración de la ventana
         ImageIcon imagen = new ImageIcon("resource/images/icono.png");
         setIconImage(imagen.getImage());
         setVisible(true);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);		
 		
-		// Añadir un WindowListener para capturar el cierre de la ventana
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres cerrar la ventana?", "Confirmar cierre", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                switch (result) {
-				case JOptionPane.YES_OPTION: {
-					System.exit(0);
-				}
-				default:
-				}
+                int result = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres cerrar la ventana?", "Confirmar cierre", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result != JOptionPane.OK_OPTION) {
+                    System.exit(0);
+                }
             }
         });
     }
