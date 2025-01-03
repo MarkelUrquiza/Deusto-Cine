@@ -8,12 +8,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -40,10 +37,8 @@ public class BBDD {
 
 	public BBDD() {
 		try (FileInputStream fis = new FileInputStream("resource/conf/logger.properties")) {
-			//Inicialización del Logger
 			LogManager.getLogManager().readConfiguration(fis);
 			
-			//Lectura del fichero properties
 			properties = new Properties();
 			properties.load(new FileReader(PROPERTIES_FILE));
 			
@@ -51,45 +46,22 @@ public class BBDD {
 			databaseFile = properties.getProperty("file");
 			connectionString = properties.getProperty("connection");
 			
-			//Crear carpetas de log si no existe
 			File dir = new File(LOG_FOLDER);
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
-
-			//Crear carpeta para la BBDD si no existe
 			dir = new File(databaseFile.substring(0, databaseFile.lastIndexOf("/")));
 			
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
 			
-			//Cargar el diver SQLite
 			Class.forName(driverName);
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al cargar el driver de BBDD: %s", ex.getMessage()));
 		}
 	}
-
-	/*public void initBD(String nombreBD)  {
-
-		try {
-			conexion = DriverManager.getConnection(connectionString);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	public void closeBD() {
-		if (conexion != null) {
-			try {
-				conexion.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}*/
 
     public void crearBBDD() {
         if (properties.get("createBBDD").equals("true")) {
@@ -231,22 +203,22 @@ public class BBDD {
                     + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/TheMatrix.png', '15,16', 1);";
            
             String insertHorarios = "INSERT OR IGNORE INTO Horarios (horario) VALUES\n"
-                    + "('2024-12-31 16:00'),\n"  // Inception
-                    + "('2025-01-01 18:30'),\n"
-                    + "('2025-01-01 17:00'),\n"  // Godfather
-                    + "('2025-01-01 20:30'),\n"
-                    + "('2025-01-02 16:00'),\n"  // Dune
-                    + "('2025-01-02 19:30'),\n"
-                    + "('2025-01-03 14:30'),\n"  // Interstellar
-                    + "('2025-01-03 19:00'),\n"
-                    + "('2025-01-04 14:30'),\n"  // Titanic
-                    + "('2025-01-04 19:00'),\n"
-                    + "('2025-01-05 16:00'),\n"  // Pulp Fiction
-                    + "('2025-01-05 20:00'),\n"
-                    + "('2025-01-06 14:00'),\n"  // EndGame
-                    + "('2025-01-06 21:00'),\n"
-                    + "('2025-01-07 17:00'),\n"  // Matrix
-                    + "('2025-01-07 20:00');";
+                    + "('2025-01-04 16:00'),\n"  // Inception
+                    + "('2025-01-04 18:30'),\n"
+                    + "('2025-01-05 17:00'),\n"  // Godfather
+                    + "('2025-01-05 20:30'),\n"
+                    + "('2025-01-06 16:00'),\n"  // Dune
+                    + "('2025-01-06 19:30'),\n"
+                    + "('2025-01-07 14:30'),\n"  // Interstellar
+                    + "('2025-01-07 19:00'),\n"
+                    + "('2025-01-08 14:30'),\n"  // Titanic
+                    + "('2025-01-08 19:00'),\n"
+                    + "('2025-01-09 16:00'),\n"  // Pulp Fiction
+                    + "('2025-01-09 20:00'),\n"
+                    + "('2025-01-10 14:00'),\n"  // EndGame
+                    + "('2025-01-10 21:00'),\n"
+                    + "('2025-01-11 17:00'),\n"  // Matrix
+                    + "('2025-01-11 20:00');";
 
             String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
                     + "('11111111A'),\n"
@@ -320,7 +292,7 @@ public class BBDD {
 			ps.setString(2, dni);
 			ps.setString(3, correo);
 			ResultSet rs = ps.executeQuery();
-			if(rs.next()) { //Si la SELECT SÍ ha devuelto información
+			if(rs.next()) {
 				existe = true;
 			}
 			rs.close();
@@ -363,7 +335,7 @@ public class BBDD {
 			ps.setString(1, username);
 			ps.setString(2, contrasenia);
 			ResultSet rs = ps.executeQuery();
-			if(rs.next()) { //Si la SELECT SÍ ha devuelto información
+			if(rs.next()) {
 				existe = true;
 			}
 			rs.close();
@@ -377,7 +349,6 @@ public class BBDD {
 		Cliente c = null;
 		String sql = "SELECT * FROM Cliente WHERE username = ? and contrasenia = ?";
 		
-		//Se abre la conexión y se crea el PreparedStatement con la sentencia SQL
 		try (Connection con = DriverManager.getConnection(connectionString);
 		     PreparedStatement pStmt = con.prepareStatement(sql)) {			
 			
@@ -864,13 +835,10 @@ public class BBDD {
 	public int numeroEntradas(String dni, String titulo, String horario) {
 	    int totalEntradas = 0;
 	    try (Connection con = DriverManager.getConnection(connectionString)) {
-	        // Obtén el ID del carrito asociado al cliente
 	        int idCarrito = obtenerIdCarritoPorDni(dni);
 	        if (idCarrito != 0) {
-	            // Obtén el ID de la película con el título dado
 	            int idPelicula = obtenerIdPeliculaPorTitulo(titulo);
 	            if (idPelicula != 0) {
-	                // Contar las entradas en la BD que coincidan con los criterios
 	                totalEntradas = contarEntradas(idCarrito, idPelicula, horario);
 	            } else {
 	                logger.warning(String.format("No se encontró una película con el título: %s", titulo));
@@ -1383,7 +1351,7 @@ public class BBDD {
             pStmt.setFloat(1, salario);
             pStmt.setString(2, dni);
             
-            int rowsAffected = pStmt.executeUpdate(); // Cambiar a executeUpdate()
+            int rowsAffected = pStmt.executeUpdate();
             if (rowsAffected > 0) {
                 logger.info("Salario cambiado correctamente");
             } else {
@@ -1495,6 +1463,55 @@ public class BBDD {
             return false;
         }
     }
+    public HashMap<Integer, String> cogerHorarios() {
+    	String sql = "SELECT * FROM Horarios";
+    	HashMap<Integer, String> horarios = new HashMap<>();
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+        	ResultSet rs = pStmt.executeQuery();
+        	while(rs.next()) {
+        		if (!horarios.containsKey(rs.getInt("id"))) {
+					horarios.put(rs.getInt("id"), rs.getString("horario"));
+				}
+        	}
+        	
+        } catch (Exception e) {
+            logger.warning(String.format("Error al devolver los horarios: %s", e.getMessage()));
+        }
+        return horarios;
+    }
+    public void meterHorario(String horario) {
+        String sql = "INSERT OR IGNORE INTO Horarios (horario) VALUES (?)";
 
-    
+		try (Connection con = DriverManager.getConnection(connectionString);
+			 PreparedStatement Stmt = con.prepareStatement(sql)) {
+			Stmt.setString(1, horario);
+				
+			if (!Stmt.execute()) {
+				logger.info(String.format("Horario: %s insertado en la BBDD", horario));
+		    }
+			
+		} catch (Exception ex) {
+			logger.warning(String.format("Error al insertar nuevo horario: %s", ex.getMessage()));
+		}			
+		
+	}
+    public boolean existeHorario(String horario) {
+		boolean existe = false;
+		String sql = "SELECT * FROM Horarios WHERE horario = ?";
+	    try (Connection con = DriverManager.getConnection(connectionString);
+				PreparedStatement ps = con.prepareStatement(sql)){
+
+			ps.setString(1, horario);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) { 
+				existe = true;
+			}
+			rs.close();
+			ps.close();
+		} catch (Exception e) {
+		    logger.warning(String.format("Error al buscar el usuario y contraseña: %s", e.getMessage()));
+		}
+		return existe;
+	}
 }

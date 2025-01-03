@@ -1,16 +1,22 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -18,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,6 +34,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
 import db.BBDD;
 import domain.Genero;
 import domain.Pelicula;
@@ -37,11 +46,11 @@ public class VentanaAdmin extends JFrame {
     private ModeloPeliculas modelo;
     private DefaultTableModel modeloHorarios;
     private JScrollPane scroll, scrollHorarios;
-    private JButton btnVolver, btnEliminar;
+    private JButton btnVolver, btnEliminar, btnhorarios, btnaniadir;
     private int mouse = -1;
     private JFrame vInicial, vActual;
     private JPanel pCentral, psur;
-
+    
     public VentanaAdmin(JFrame vI, BBDD bd) {
         vInicial = vI;
         vActual = this;
@@ -54,11 +63,53 @@ public class VentanaAdmin extends JFrame {
         btnVolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	bd.CerrarSesion("admin");
                 vActual.dispose();
                 vInicial.setVisible(true);
             }
         });
 
+        btnhorarios = new JButton("MOSTRAR HORARIOS");
+        btnhorarios.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String h = "";
+				HashMap<Integer, String> horarios = bd.cogerHorarios();
+				for(Integer i: horarios.keySet()) {
+					h += "ID: "+i.toString()+", Horario: "+horarios.get(i)+"\n";
+				}
+				JOptionPane.showConfirmDialog(null, "Estos son los horarios disponibles: \n"+h, "Horarios", JOptionPane.DEFAULT_OPTION);
+				
+			}
+		});
+        
+        btnaniadir = new JButton("AÑADIR HORARIO");
+        btnaniadir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String resultado = JOptionPane.showInputDialog(null, "Introduce el nuevo horario (formato: yyyy-MM-dd HH:mm):", "Horario nuevo");
+
+                if (resultado != null && !resultado.trim().isEmpty()) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    try {
+                        LocalDateTime parsedDate = LocalDateTime.parse(resultado, formatter);
+                        String horarioFormatted = parsedDate.format(formatter);
+                        if (!bd.existeHorario(horarioFormatted)) {
+                            bd.meterHorario(horarioFormatted);
+						} else {
+		                    JOptionPane.showMessageDialog(null, "Este horario ya esta en la base de datos.");
+						}
+                    } catch (DateTimeParseException ex) {
+                        JOptionPane.showMessageDialog(null, "Formato inválido. Por favor, introduce el horario en el formato: yyyy-MM-dd HH:mm");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El horario no puede estar vacío.");
+                }
+            }
+        });
+
+        
         btnEliminar = new JButton("ELIMINAR");
         btnEliminar.addActionListener(new ActionListener() {
             @Override
@@ -96,41 +147,27 @@ public class VentanaAdmin extends JFrame {
         scrollHorarios = new JScrollPane(tablaHorarios);
         scrollHorarios.setBorder(new TitledBorder("Horarios"));
 
-        tabla.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                mouse = tabla.rowAtPoint(e.getPoint());
-                tabla.repaint();
-            }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-            }
-        });
-
-        tabla.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            	 mouse = -1;
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-               
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-        });
+		tabla.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				mouse = -1;		
+				tabla.repaint();
+			}
+		});
+		tabla.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mouse = tabla.rowAtPoint(e.getPoint());
+				tabla.repaint();	
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				
+			}
+		});
 
         KeyListener keyListener = new KeyListener() {
             @Override
@@ -217,8 +254,53 @@ public class VentanaAdmin extends JFrame {
                 }
             }
         };
-
         tabla.addKeyListener(keyListener);
+        
+        tabla.setDefaultRenderer(Object.class, new TableCellRenderer() {
+			
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+					int row, int column) {
+				JLabel c = new JLabel(value.toString());
+				c.setOpaque(true);
+
+				if (row == mouse || isSelected) {
+					c.setBackground(Color.cyan);
+					c.setForeground(Color.black);
+				} else {
+					if (row %2 == 0) {
+						c.setBackground(Color.white);
+						c.setForeground(Color.black);
+					} else {
+						c.setBackground(Color.lightGray);
+						c.setForeground(Color.white);
+					}
+					if (column == 3) {
+						if (Float.parseFloat(value.toString())<1.0) {
+							c.setBackground(Color.red);
+							c.setForeground(Color.white);
+						} else if (Float.parseFloat(value.toString())<2.0) {
+							c.setBackground(Color.blue);
+							c.setForeground(Color.white);
+						} else if (Float.parseFloat(value.toString())<3.0) {
+							c.setBackground(Color.orange);
+							c.setForeground(Color.white);
+						} else {
+							c.setBackground(Color.pink);
+							c.setForeground(Color.white);
+						}
+					}
+				}
+				if (column == 4) {
+					c.setHorizontalAlignment(JLabel.RIGHT);
+				} else {
+					c.setHorizontalAlignment(JLabel.CENTER);
+				}
+	
+				
+				return c;
+			}
+		});
 
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabla.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -239,6 +321,8 @@ public class VentanaAdmin extends JFrame {
         
         psur.add(btnVolver);
         psur.add(btnEliminar);
+        psur.add(btnhorarios);
+        psur.add(btnaniadir);
 
         ImageIcon imagen = new ImageIcon("resource/images/icono.png");
         setIconImage(imagen.getImage());

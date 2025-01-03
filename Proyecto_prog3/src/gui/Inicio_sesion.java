@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -25,7 +25,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
-
 import db.BBDD;
 import domain.Cartelera;
 import domain.Cliente;
@@ -39,6 +38,7 @@ public class Inicio_sesion extends JFrame {
     private JPasswordField con;
     private JButton btninicio, btnregistro;
     private JFrame vActual;
+	private static Logger logger = Logger.getLogger(Inicio_sesion.class.getName());
     
     public Inicio_sesion(BBDD bd) {
         vActual = this;
@@ -82,17 +82,20 @@ public class Inicio_sesion extends JFrame {
         
         btninicio = new JButton("Iniciar sesion");
         btninicio.addActionListener((e) -> {
-            if (con.getText().isEmpty() || nom.getText().isEmpty()) {
+            if (con.getPassword().length == 0 || nom.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Rellena todas las partes", "CUIDADO!!!", JOptionPane.WARNING_MESSAGE);
                 nom.setText("");
                 con.setText("");
             } else {
-               
-                if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
-                	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
+               String contra = "";
+               for (int i = 0; i < con.getPassword().length; i++) {
+            	   contra += con.getPassword()[i];
+               }
+                if (bd.existeUsuarioyContrasenia(nom.getText(), contra)) {
+                	Cliente c = bd.obtenerUsuario(nom.getText(), contra);
 
                 	String h = bd.InicioSesion(c.getDni());
-                	System.out.println(h);
+					logger.info(String.format("Se ha iniciado sesion a las: "+ h + ". Desde el usuario con DNI: " + c.getDni()));
                     bd.eliminarHorariosPasados(h);
 
                     
@@ -134,11 +137,18 @@ public class Inicio_sesion extends JFrame {
                 	new Ventana_inicial(vActual,cartelera, c, bd);
 
                 } else {
-                	if (nom.getText().equals("admin") && con.getText().equals("admin")) {
+                	if (nom.getText().equals("admin") && contra.equals("admin")) {
+                		
+                		String h = bd.InicioSesion("admin");
+						logger.info(String.format("Se ha iniciado sesion a las: "+ h + ". Desde el admin."));
+                        bd.eliminarHorariosPasados(h);
+                		
 						dispose();
 						new VentanaAdmin(vActual, bd);
 					}
                 }
+                nom.setText("");
+                con.setText("");
             }
         });
         InputMap inputMap = btninicio.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -146,74 +156,79 @@ public class Inicio_sesion extends JFrame {
 
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "Iniciar sesion");
         actionMap.put("Iniciar sesion", new AbstractAction() {
-            /**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent e) {
-            	if (con.getText().isEmpty() || nom.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Rellena todas las partes", "CUIDADO!!!", JOptionPane.WARNING_MESSAGE);
-                    nom.setText("");
-                    con.setText("");
-                } else {
-                   
-                    if (bd.existeUsuarioyContrasenia(nom.getText(), con.getText())) {
-                    	Cliente c = bd.obtenerUsuario(nom.getText(), con.getText());
+	            if (con.getPassword().length == 0 || nom.getText().isEmpty()) {
+	                JOptionPane.showMessageDialog(null, "Rellena todas las partes", "CUIDADO!!!", JOptionPane.WARNING_MESSAGE);
+	                nom.setText("");
+	                con.setText("");
+	            } else {
+	               String contra = "";
+	               for (int i = 0; i < con.getPassword().length; i++) {
+	            	   contra += con.getPassword()[i];
+	               }
+	                if (bd.existeUsuarioyContrasenia(nom.getText(), contra)) {
+	                	Cliente c = bd.obtenerUsuario(nom.getText(), contra);
 
-                    	String h = bd.InicioSesion(c.getDni());
-                    	System.out.println(h);
-                        bd.eliminarHorariosPasados(h);
+	                	String h = bd.InicioSesion(c.getDni());
+						logger.info(String.format("Se ha iniciado sesion a las: "+ h + ". Desde el usuario con DNI: " + c.getDni()));
+	                    bd.eliminarHorariosPasados(h);
 
-                        
-                    	if (c.getCarrito_de_compra() == null ) {
-                    	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
-                    	}
-                        Cartelera cartelera = new Cartelera();
-                        cartelera.setCartelera(cartelera.cargarCartelera(bd));
-                        
-                        dispose();
-                        JProgressBar progressBar = new JProgressBar(0, 100);
-                        progressBar.setValue(0);
-                        progressBar.setStringPainted(true);
+	                    
+	                	if (c.getCarrito_de_compra() == null ) {
+	                	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
+	                	}
+	                    Cartelera cartelera = new Cartelera();
+	                    cartelera.setCartelera(cartelera.cargarCartelera(bd));
+	                    
+	                    dispose();
+	                    JProgressBar progressBar = new JProgressBar(0, 100);
+	                    progressBar.setValue(0);
+	                    progressBar.setStringPainted(true);
 
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BorderLayout());
-                        panel.add(progressBar, BorderLayout.CENTER);
+	                    JPanel panel = new JPanel();
+	                    panel.setLayout(new BorderLayout());
+	                    panel.add(progressBar, BorderLayout.CENTER);
 
-                        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-                        JDialog dialog = optionPane.createDialog("Cargando...");
-                        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-                        
-                        new Thread(() -> {
-                            int progress = 0;
-                            try {
-                                while (progress <= 100) {
-                                    progressBar.setValue(progress);
-                                    Thread.sleep(30);
-                                    progress += 1;
-                                }
-                            } catch (InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                            } finally {
-                                dialog.dispose();
-                            }
-                        }).start();
-                        
-                        dialog.setVisible(true);
-                    	new Ventana_inicial(vActual,cartelera, c, bd);
+	                    JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+	                    JDialog dialog = optionPane.createDialog("Cargando...");
+	                    dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+	                    
+	                    new Thread(() -> {
+	                        int progress = 0;
+	                        try {
+	                            while (progress <= 100) {
+	                                progressBar.setValue(progress);
+	                                Thread.sleep(30);
+	                                progress += 1;
+	                            }
+	                        } catch (InterruptedException ex) {
+	                            Thread.currentThread().interrupt();
+	                        } finally {
+	                            dialog.dispose();
+	                        }
+	                    }).start();
+	                    
+	                    dialog.setVisible(true);
+	                	new Ventana_inicial(vActual,cartelera, c, bd);
 
-                    } else {
-                    	if (nom.getText().equals("admin") && con.getText().equals("admin")) {
-    						dispose();
-    						new VentanaAdmin(vActual, bd);
-    					}
-                    }
-                    nom.setText("");
-                    con.setText("");
-                }
-            }
+	                } else {
+	                	if (nom.getText().equals("admin") && contra.equals("admin")) {
+	                		
+	                		String h = bd.InicioSesion("admin");
+							logger.info(String.format("Se ha iniciado sesion a las: "+ h + ". Desde el admin."));
+	                        bd.eliminarHorariosPasados(h);
+	                		
+							dispose();
+							new VentanaAdmin(vActual, bd);
+						}
+	                }
+	                nom.setText("");
+	                con.setText("");
+	            }
+	        }
         });
         Font fuente = new Font(getName(), Font.BOLD, 16);
         nombre.setFont(fuente);

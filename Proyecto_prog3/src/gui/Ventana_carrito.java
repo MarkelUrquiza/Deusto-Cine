@@ -11,16 +11,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,7 +40,6 @@ import domain.Butaca;
 import domain.Cartelera;
 import domain.Cliente;
 import domain.Entrada;
-import domain.Pelicula;
 
 public class Ventana_carrito extends JFrame{
 	private static final long serialVersionUID = 1L;
@@ -292,6 +288,7 @@ public class Ventana_carrito extends JFrame{
 			@Override
 			public void mouseExited(MouseEvent e) {
 				mouseEntradas = -1;				
+				tablaentradas.repaint();
 			}
 		});
 		tablaentradas.addMouseMotionListener(new MouseMotionListener() {
@@ -318,22 +315,24 @@ public class Ventana_carrito extends JFrame{
 				if (row == mouseEntradas) {
 					r.setBackground(tablaentradas.getSelectionBackground());
 					r.setForeground(tablaentradas.getSelectionForeground());
-				}
-				if (column == 4) {
-					if (Float.parseFloat(value.toString()) == 0) {
-						r.setBackground(Color.green);
-						r.setForeground(Color.white);
-					}else if (Float.parseFloat(value.toString()) ==  12) {
-						r.setBackground(Color.blue);
-						r.setForeground(Color.white);
-					} else {
-						r.setBackground(Color.gray);
-						r.setForeground(Color.white);
+				} else {
+					if (column == 4) {
+						if (Float.parseFloat(value.toString()) == 0) {
+							r.setBackground(Color.green);
+							r.setForeground(Color.white);
+						}else if (Float.parseFloat(value.toString()) ==  12) {
+							r.setBackground(Color.blue);
+							r.setForeground(Color.white);
+						} else {
+							r.setBackground(Color.gray);
+							r.setForeground(Color.white);
+						}
+					}else {
+						r.setBackground(Color.white);
+						r.setForeground(Color.black);
 					}
-				}else {
-					r.setBackground(Color.white);
-					r.setForeground(Color.black);
 				}
+				
 				return r;
 			}
 		});

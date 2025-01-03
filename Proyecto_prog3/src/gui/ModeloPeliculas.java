@@ -2,6 +2,7 @@ package gui;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -54,7 +55,7 @@ public class ModeloPeliculas extends DefaultTableModel{
 		case 0: return p.getTitulo();
 		case 1: return p.getDirector();
 		case 2: return p.getTipo();
-        case 3: return String.format("%.1f", p.getDuracion());
+		case 3: return String.format(Locale.US, "%.1f", p.getDuracion());
 		case 4: return p.getHorarios();
 		default: throw new IllegalArgumentException("Unexpected value: " + column);
 		}
