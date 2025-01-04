@@ -306,7 +306,7 @@ public class BBDD {
 		return existe;
 	}
 	public void registrar(Cliente c) {
-		String sql = "INSERT INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo, salario) VALUES (?, ?, ?, ?, ?, ?, salario);";
+		String sql = "INSERT INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo, salario) VALUES (?, ?, ?, ?, ?, ?, ?);";
 		
 		try (Connection con = DriverManager.getConnection(connectionString);
 			 PreparedStatement Stmt = con.prepareStatement(sql)) {
