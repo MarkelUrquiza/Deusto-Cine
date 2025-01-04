@@ -100,34 +100,4 @@ public class Cliente{
 		this.salario = salario;
 	}
 	
-	/*public HashMap<Entrada, Integer> cargarEntradas() {
-		HashMap<Entrada, Integer> entradas = new HashMap<Entrada, Integer>();
-		File f = new File("resource/data/Entrada.txt");
-		try {
-			Scanner sc = new Scanner(f);
-			while (sc.hasNextLine()) {
-				String string = sc.nextLine();
-				String[] campos = string.split(";");
-				
-				int id_sala = Integer.parseInt(campos[0]);
-				int id_peli = Integer.parseInt(campos[1]);
-				String titulo = campos[2];
-				int fila = Integer.parseInt(campos[3]);
-				int column = Integer.parseInt(campos[4]);
-				boolean vip = Boolean.valueOf(campos[5]);
-				String hora = campos[6];
-				
-				Butaca butaca = new Butaca(fila, Columna.values()[column], vip,  id_sala);
-				Entrada entrada = new Entrada(butaca, id_peli, titulo, id_sala,10,hora);
-
-				
-				entradas.put(entrada, 1);
-			}
-			sc.close();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return entradas;
-	}*/
 }

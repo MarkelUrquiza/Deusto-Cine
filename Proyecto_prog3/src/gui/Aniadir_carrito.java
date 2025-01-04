@@ -197,6 +197,8 @@ public class Aniadir_carrito extends JFrame {
 			if (pelis.get(pos).getTitulo().equals(valor)) {		
 				
 				Pelicula peli = pelis.get(pos);
+				//IAG ChatGPT
+				//Como redimensionar una imagen
 				ImageIcon img = new ImageIcon(peli.getRutafoto());
 				Image imagenOriginal = img.getImage();
 				Image imagenRedimensionada = imagenOriginal.getScaledInstance(foto.getWidth(), foto.getHeight(), Image.SCALE_SMOOTH);

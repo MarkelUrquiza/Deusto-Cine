@@ -63,7 +63,8 @@ public class VentanaSeleccionarEntradas extends JFrame {
                     Butaca butacaPrevia = butacasSeleccionadas.get(personaIndex);
                     bd.CancelaReservaButaca(butacaPrevia, horario);
                 }
-
+		        //IAG ChatGPT
+		        //Hacer que te devuelva la butaca seleccionada
                 new Ventana_elegirbutaca(vActual, bd, id_sala, butacaSeleccionada -> {
                     if (butacasSeleccionadas.size() > personaIndex) {
                         butacasSeleccionadas.set(personaIndex, butacaSeleccionada);
@@ -78,7 +79,8 @@ public class VentanaSeleccionarEntradas extends JFrame {
             edad.setPaintLabels(true);
             edad.setMajorTickSpacing(20);
             edad.setMinorTickSpacing(5);
-
+	        //IAG ChatGPT
+	        //Para que cambie al instante sin hacer un hilo
             edad.addChangeListener(cl -> {
                 edadLabel.setText("Edad: " + edad.getValue());
             });
@@ -112,6 +114,8 @@ public class VentanaSeleccionarEntradas extends JFrame {
             
             LinkedList<Object> ll = new LinkedList<Object>();
             ArrayList<String> al = new ArrayList<String>();
+	        //IAG ChatGPT
+	        //Coger la informacion de lo anterior
             for (int i = 0; i < pagina.getTabCount(); i++) {
                 JPanel panelCliente = (JPanel) pagina.getComponentAt(i);
                 JPanel datos = (JPanel) panelCliente.getComponent(2);

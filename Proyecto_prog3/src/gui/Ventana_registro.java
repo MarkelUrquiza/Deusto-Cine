@@ -126,6 +126,8 @@ public class Ventana_registro extends JFrame {
 				
 			}
 		});
+        //IAG ChatGPT
+        //Action map para que inicie sesion con enter
         InputMap inputMap = btnregistrar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = btnregistrar.getActionMap();
 

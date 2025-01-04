@@ -84,6 +84,8 @@ public class Ventana_elegirbutaca extends JFrame {
                             tabla.setModel(modelotabla);
     		                try {
 								Thread.sleep(1000);
+						        //IAG ChatGPT
+						        //Callback para que devuelva el resultado a ventana seleccionar entradas
 	                            callback.accept(b);
 	                            dispose();
 							} catch (InterruptedException e1) {

@@ -89,7 +89,8 @@ public class VentanaAdmin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String resultado = JOptionPane.showInputDialog(null, "Introduce el nuevo horario (formato: yyyy-MM-dd HH:mm):", "Horario nuevo");
-
+		        //IAG ChatGPT
+		        //Comprobar que el horario este en el formato correcto
                 if (resultado != null && !resultado.trim().isEmpty()) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     try {
@@ -120,6 +121,8 @@ public class VentanaAdmin extends JFrame {
                     Pelicula ps = pelis.get(selectedRow);
                     bd.eliminarPelicula(ps.getTitulo());
                     pelis.remove(ps);
+    		        //IAG ChatGPT
+    		        //Como hacer directamente el cambio despues de borrar una peli
                     modelo.fireTableDataChanged();
                     JOptionPane.showMessageDialog(null, "¡Película eliminada exitosamente!");
                 } else {
@@ -182,6 +185,8 @@ public class VentanaAdmin extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()) {
                     try {
+        		        //IAG ChatGPT
+        		        //Hacer comprobaciones
                         JComboBox<Integer> salaComboBox = new JComboBox<>(new Integer[]{1, 2, 3, 4});
                         int salaOpcion = JOptionPane.showConfirmDialog(null, salaComboBox, "Selecciona el ID de la sala", JOptionPane.OK_CANCEL_OPTION);
                         if (salaOpcion != JOptionPane.OK_OPTION) {

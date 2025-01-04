@@ -12,9 +12,7 @@ public class Main {
 		bd.inicilizarButacasContxt();
 		bd.insertardatosporDefecto();
         
-        //new Ventana_elegirbutaca(bd);
 		new Inicio_sesion(bd);
-		//new VentanaSeleccionarEntradas(1);
 
 	}
 

@@ -36,7 +36,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import db.BBDD;
-import domain.Butaca;
 import domain.Cartelera;
 import domain.Cliente;
 import domain.Entrada;
@@ -71,7 +70,8 @@ public class Ventana_carrito extends JFrame{
 		filtrar = new JTextField(20);
 		
 		filtro = new JLabel("Filtrar por: ");
-		
+        //IAG ChatGPT
+        //Como formatear el salario
 		salario = new JLabel("Saldo disponible: " + String.format("%.2f", c.getSalario())+ "€   ");
 		salario.setOpaque(true);
 		salario.setBackground(Color.LIGHT_GRAY);
@@ -105,6 +105,8 @@ public class Ventana_carrito extends JFrame{
 				if (precioTotal > c.getSalario()) {
 	                JOptionPane.showMessageDialog(null, "No tienes saldo suficiente", "SALDO INSUFICIENTE...", JOptionPane.WARNING_MESSAGE);
 				} else {
+					c.setSalario(c.getSalario()-precioTotal);
+					bd.cambiarSaldo(c.getSalario(), c.getDni());
 					bd.comprarCarrito3(c.getDni());
 					c.setCarrito_de_compra(new HashMap<Entrada, Integer>());
 					modelocarrito = new ModeloCarrito(c.getCarrito_de_compra(),bd);		
@@ -123,7 +125,7 @@ public class Ventana_carrito extends JFrame{
 				String result = JOptionPane.showInputDialog(null, "Introduce la cantidad que vas a depositar:", "AÑADIR SALDO", JOptionPane.INFORMATION_MESSAGE);
 				vActual.setVisible(false);
 				c.setSalario(c.getSalario() + Integer.parseInt(result));
-				bd.cambiarSalario(c.getSalario(), c.getDni());
+				bd.cambiarSaldo(c.getSalario(), c.getDni());
 				new Tarjeta(vInicial, Integer.parseInt(result));
 			}
 		});
@@ -189,8 +191,11 @@ public class Ventana_carrito extends JFrame{
 					c.setBackground(tablacarrito.getSelectionBackground());
 					c.setForeground(tablacarrito.getSelectionForeground());
 				}
+				
+		        //IAG ChatGPT
+		        //Hacer que el filtro se coloree
 				String filtroTexto = filtrar.getText().toLowerCase();
-		        String columnaSeleccionada = (String) combo.getSelectedItem();
+		        String columnaSeleccionada = combo.getSelectedItem().toString();
 
 		        boolean resaltar = false;
 		        if (filtroTexto != null && !filtroTexto.isEmpty()) {
@@ -236,10 +241,7 @@ public class Ventana_carrito extends JFrame{
 		scrollTabla.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollTabla.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollTabla.setBorder(new TitledBorder("Entradas"));
-		//String [] titulos = {"PELICULA","SALA","FILA BUTACA","COLUMNA BUTACA","BUTACA VIP","FECHA","PRECIO","NUMERO DE ENTRADAS"};
-		//modelocarrito.setColumnIdentifiers(titulos);
 		
-		//cargarTablaCarrito(c, bd);	
 		tablacarrito.setFillsViewportHeight(true);
 		tablacarrito.getTableHeader().setReorderingAllowed(false);
 		
@@ -341,6 +343,8 @@ public class Ventana_carrito extends JFrame{
 		tablacarrito.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		    @Override
 		    public void valueChanged(ListSelectionEvent e) {
+		        //IAG ChatGPT
+		        //Que cargue la tabla entradas cuando se selecciona una fila de la tabla carrito
 		        if (!e.getValueIsAdjusting()) {
 		            int row = tablacarrito.getSelectedRow();
 		            if (row != -1) {
@@ -380,26 +384,6 @@ public class Ventana_carrito extends JFrame{
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setVisible(true);
-	}
-	
-	public void cargarTablaCarrito(Cliente c, BBDD bd) {
-		
-		if (c.getCarrito_de_compra()!=null) {
-			modelocarrito.setRowCount(0);
-			for (Entrada entrada: c.getCarrito_de_compra().keySet()) {
-				int id_butaca = bd.obtenerIDButacaporIddeEntrada(entrada.getId());
-				Butaca butaca = bd.obtenerButacaporId(id_butaca);
-				if (butaca.isVip()) {
-					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"SI",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
-					modelocarrito.addRow(fila);
-				} else {
-					Object [] fila = {entrada.getTitulo_peli(),entrada.getSala(),butaca.getFila(),butaca.getColumna(),"NO",entrada.getHorario(),entrada.getPrecio(),c.getCarrito_de_compra().get(entrada)};
-					modelocarrito.addRow(fila);
-				}
-				
-			}	
-		}
-				
 	}
 	
 	public void filtrar(Cliente c, BBDD bd) {
@@ -446,7 +430,8 @@ public class Ventana_carrito extends JFrame{
 	    }
 	}
 
-
+    //IAG ChatGPT
+    //Filtrar las entradas que no tengan misma sala, misma peli y mismo horario
 	public HashMap<Entrada, Integer> filtrarEntradasUnicas(HashMap<Entrada, Integer> carrito) {
 	    HashMap<String, Entrada> uniqueEntriesMap = new HashMap<>();
 	    HashMap<Entrada, Integer> filteredCarrito = new HashMap<>();
@@ -481,7 +466,6 @@ public class Ventana_carrito extends JFrame{
 	        Set<List<String>> resultado = new HashSet<>();
 	        combinacionesR(edades, new ArrayList<>(), resultado, saldo, 0, 0);
 
-	        // Convertimos el Set a una lista y eliminamos el primer elemento si está vacío
 	        List<List<String>> listaResultado = new ArrayList<>(resultado);
 	        listaResultado.removeIf(List::isEmpty); // Eliminamos combinaciones vacías.
 
@@ -490,30 +474,27 @@ public class Ventana_carrito extends JFrame{
 
 	    public static void combinacionesR(List<Integer> edades, List<Integer> aux, Set<List<String>> result, float saldo, float suma, int start) {
 	        if (suma > saldo) {
-	            return; // Terminamos si excedemos el saldo.
+	            return;
 	        }
 
-	        // Agregamos una copia de la combinación actual transformada en rangos si la suma es válida.
 	        if (suma <= saldo) {
 	            List<String> copia = new ArrayList<>();
 	            for (int edad : aux) {
-	                copia.add(edades(edad)); // Convertimos cada edad a su rango.
+	                copia.add(edades(edad));
 	            }
-	            Collections.sort(copia); // Ordenamos para evitar duplicados.
-	            result.add(copia); // El Set se encarga de eliminar duplicados.
+	            Collections.sort(copia);
+	            result.add(copia);
 	        }
 
-	        // Iteramos sobre las edades disponibles.
 	        for (int i = start; i < edades.size(); i++) {
 	            float precio = calcularPrecio(edades.get(i));
-	            if (precio < 0) continue; // Ignoramos edades con precios inválidos.
+	            if (precio < 0) continue;
 
 	            aux.add(edades.get(i));
 	            suma += precio;
 
 	            combinacionesR(edades, aux, result, saldo, suma, i + 1);
 
-	            // Backtracking: deshacemos el último paso.
 	            suma -= precio;
 	            aux.remove(aux.size() - 1);
 	        }
@@ -521,15 +502,15 @@ public class Ventana_carrito extends JFrame{
 
 	    public static float calcularPrecio(int edad) {
 	        if (edad < 3) {
-	            return 0; // Gratis.
+	            return 0;
 	        } else if (edad < 10) {
-	            return 0; // Precio gratuito para niños.
+	            return 0;
 	        } else if (edad < 18) {
-	            return 8; // Precio para jóvenes.
+	            return 8;
 	        } else if (edad < 65) {
-	            return 12; // Precio para adultos.
+	            return 12;
 	        } else {
-	            return 8; // Precio para seniors.
+	            return 8;
 	        }
 	    }
 

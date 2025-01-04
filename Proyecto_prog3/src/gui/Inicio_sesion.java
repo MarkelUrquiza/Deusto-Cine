@@ -47,6 +47,8 @@ public class Inicio_sesion extends JFrame {
         setLocationRelativeTo(null);
 
         pcentro = new JPanel();
+        //IAG ChatGPT
+        //Como crear el borde para dejarlo apañado
         pcentro.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         psur = new JPanel();
         psur.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -151,6 +153,8 @@ public class Inicio_sesion extends JFrame {
                 con.setText("");
             }
         });
+        //IAG ChatGPT
+        //El action map para que se inicie sesion con enter
         InputMap inputMap = btninicio.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = btninicio.getActionMap();
 

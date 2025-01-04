@@ -170,7 +170,8 @@ public class BBDD {
             }
         }
     }
-
+    //IAG ChatGPT
+    //Insertar los datos por defecto a la base de datos
     public void insertardatosporDefecto() {
         if (properties.get("createBBDD").equals("true")) {
             if (tablaTieneDatos("Cliente") && tablaTieneDatos("Pelicula") && tablaTieneDatos("Horarios") &&
@@ -268,7 +269,10 @@ public class BBDD {
                 logger.warning(String.format("Error al insertar los datos: %s", e.getMessage()));
             }
         }
-    }
+    }		  
+    
+    //IAG ChatGPT
+    //Mirar si existen las tablas
     private boolean tablaTieneDatos(String tabla) {
         String query = String.format("SELECT COUNT(*) AS total FROM %s", tabla);
         try (Connection con = DriverManager.getConnection(connectionString);
@@ -280,7 +284,6 @@ public class BBDD {
             return false;
         }
     }
-
 
 	public boolean existeUsuario(String username, String dni, String correo) {
 		boolean existe = false;
@@ -320,7 +323,7 @@ public class BBDD {
 				if (!Stmt.execute()) {
 					logger.info(String.format("Usuario con DNI: %s insertado en la BBDD", c.getDni()));
 			    }
-			
+				Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nuevo usuario: %s", ex.getMessage()));
 		}			
@@ -363,7 +366,7 @@ public class BBDD {
 			}
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha encontrado correctamente el usuario con DNI: %s", c.getDni()));			
 		} catch (Exception e) {
 			logger.warning(String.format("Error al encontrar el usuario con username: %s", user));						
@@ -389,6 +392,7 @@ public class BBDD {
 	            }
 	        }
 	        rs.close();
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al cargar el carrito del cliente con DNI: %s. Detalles: %s", dni, e.getMessage()));
 	    }
@@ -438,6 +442,7 @@ public class BBDD {
 	        }
             logger.info(String.format("Se ha encontrado correctamente la entrada"));
 	        rs.close();
+	        pStmt.close();
 	    } catch (Exception exception) {
 	        logger.warning(String.format("Error al encontrar la entrada. Detalles: %s", exception.getMessage()));
 	    }
@@ -465,7 +470,7 @@ public class BBDD {
 			}
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha encontrado correctamente la Butaca con id: %d", id));			
 		} catch (Exception e) {
 			logger.warning(String.format("Error al encontrar la Butaca con id: %d", id));						
@@ -509,7 +514,7 @@ public class BBDD {
 	        }
 
 	        rs.close();
-
+	        pStmt.close();
 	        logger.info(String.format("Se ha encontrado correctamente la Pelicula con id: %d", id));
 	    } catch (Exception e) {
 	        e.printStackTrace();  
@@ -531,7 +536,7 @@ public class BBDD {
 			id_butaca = rs.getInt("id_butaca");
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha encontrado correctamente la Butaca con id: %d", id_butaca));			
 		} catch (Exception e) {
 			logger.warning(String.format("Error al encontrar la Butaca con id: %d", id_butaca));						
@@ -559,6 +564,7 @@ public class BBDD {
 		        if (!pStmt1.execute()) {
 		        	logger.info("Se han borrado las Butacas");
 		        }
+		        pStmt1.close();
 			} catch (Exception ex) {
 				logger.warning(String.format("Error al borrar las Butacas: %s", ex.getMessage()));
 			}
@@ -611,7 +617,7 @@ public class BBDD {
 				if (!Stmt.execute()) {
 					logger.info(String.format("Butaca con id: %d insertado en la BBDD", b.getId()));
 			    }
-			
+			Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nueva butaca: %s", ex.getMessage()));
 		}			
@@ -639,7 +645,7 @@ public class BBDD {
 			}
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha obtenido la lista de butacas."));			
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al obtener la lista de butacas: %s", ex.getMessage()));						
@@ -698,7 +704,7 @@ public class BBDD {
 			}
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha obtenido los horarios."));			
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al obtener los horarios: %s", ex.getMessage()));						
@@ -720,6 +726,7 @@ public class BBDD {
 			} else {					
 				logger.info(String.format("Se ha actualizado la Butaca con id: %d", b.getId()));
 			}			
+			pStmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al actualizar la Butaca con id: %d", b.getId()));
 		}				
@@ -738,6 +745,7 @@ public class BBDD {
 			} else {					
 				logger.info(String.format("Se ha actualizado la Butaca con id: %d", b.getId()));
 			}			
+			pStmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al actualizar la Butaca con id: %d", b.getId()));
 		}				
@@ -766,7 +774,7 @@ public class BBDD {
 			}
 			
 			rs.close();
-			
+			pStmt.close();
 			logger.info(String.format("Se ha encontrado correctamente la pelicula con titulo: %s", titulo));			
 		} catch (Exception e) {
 			logger.warning(String.format("Error al encontrar la pelicula con titulo: %s", titulo));						
@@ -791,7 +799,7 @@ public class BBDD {
 			if (!Stmt.execute()) {
 				logger.info(String.format("Entrada insertada en la BBDD"));
 		    }
-			
+			Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nueva entrada: %s", ex.getMessage()));
 		}			
@@ -807,7 +815,7 @@ public class BBDD {
 			if (!Stmt.execute()) {
 				logger.info(String.format("Carrito insertado en la BBDD"));
 		    }
-			
+			Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nuevo Carrito: %s", ex.getMessage()));
 		}			
@@ -826,12 +834,16 @@ public class BBDD {
 	            } else {
 	                logger.warning(String.format("No se encontró un carrito asociado al dni: %s", dni));
 	            }
+	            rs.close();
 	        }
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al encontrar el Carrito para el dni %s: %s", dni, e.getMessage()));
 	    }
 	    return id_carrito;
 	}
+	//IAG ChatGPT
+	//Calcular el numero de entradas
 	public int numeroEntradas(String dni, String titulo, String horario) {
 	    int totalEntradas = 0;
 	    try (Connection con = DriverManager.getConnection(connectionString)) {
@@ -862,6 +874,7 @@ public class BBDD {
 	            idCarrito = rs.getInt("id");
 	        }
 	        rs.close();
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al obtener el ID del carrito para el cliente con DNI: %s. Detalles: %s", dni, e.getMessage()));
 	    }
@@ -878,11 +891,14 @@ public class BBDD {
 	            idPelicula = rs.getInt("id");
 	        }
 	        rs.close();
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al obtener el ID de la película con título: %s. Detalles: %s", titulo, e.getMessage()));
 	    }
 	    return idPelicula;
 	}
+	//IAG ChatGPT
+	//Contar entradas
 	public int contarEntradas(int idCarrito, int idPelicula, String horario) {
 	    int cantidad = 0;
 	    String sql = "SELECT COUNT(*) AS total FROM Entrada WHERE id_carrito = ? AND id_peli = ? AND id_horario = ?";
@@ -900,13 +916,15 @@ public class BBDD {
 	            cantidad = rs.getInt("total");
 	        }
 	        rs.close();
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al contar entradas para carrito: %d, película: %d, horario: %s. Detalles: %s",
 	                                     idCarrito, idPelicula, horario, e.getMessage()));
 	    }
 	    return cantidad;
 	}
-
+	//IAG ChatGPT
+	//Comprar carrito version 1
 	public void comprarCarrito(String dni) {
 		if (properties.get("cleanButacas").equals("true")) {	
 			String sql1 = "DELETE FROM Carrito WHERE cliente_dni = ?;";
@@ -917,11 +935,14 @@ public class BBDD {
 		        if (!pStmt1.execute()) {
 		        	logger.info("Se han comprado las entradas");
 		        }
+		        pStmt1.close();
 			} catch (Exception ex) {
 				logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
 			}
 		}
 	}
+	//IAG ChatGPT
+	//Comprar carrito version 2
 	public void comprarCarrito2(String dni) {
 	    String sql1 = "DELETE FROM Entrada WHERE id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
 	    String sql2 = "DELETE FROM Carrito WHERE cliente_dni = ?;";
@@ -941,6 +962,8 @@ public class BBDD {
 	            logger.info(String.format("%d carritos eliminados", carritosEliminados));
 
 	            con.commit();
+	            pStmt1.close();
+	            pStmt2.close();
 	        } catch (Exception e) {
 	            con.rollback();
 	            throw e;
@@ -949,6 +972,8 @@ public class BBDD {
 	        logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
 	    }
 	}
+	//IAG ChatGPT
+	//Comprar carrito version 3
 	public void comprarCarrito3(String dni) {
 	    String sql1 = "SELECT e.id_butaca, e.id_peli, e.id_horario, e.nombre, e.apellido, e.apellido2, e.edad " +
 	                  "FROM Entrada e WHERE e.id_carrito = (SELECT id FROM Carrito WHERE cliente_dni = ?);";
@@ -995,6 +1020,10 @@ public class BBDD {
 	            logger.info(String.format("%d carritos eliminados", carritosEliminados));
 
 	            con.commit();
+	            pStmt1.close();
+	            pStmt2.close();
+	            pStmt3.close();
+	            pStmt4.close();
 	        } catch (Exception ex) {
 	            con.rollback();
 	            logger.warning(String.format("Error al comprar las Entradas: %s", ex.getMessage()));
@@ -1004,7 +1033,8 @@ public class BBDD {
 	    }
 	}
 
-
+	//IAG ChatGPT
+	//Iniciar sesion
 	public String InicioSesion(String dni) {
 	    String selectSql = "SELECT horario_inicio_sesion FROM InicioSesion WHERE cliente_dni = ?";
 	    String insertSql = "INSERT INTO InicioSesion (horario_inicio_sesion, cliente_dni) VALUES (?, ?)";
@@ -1021,18 +1051,19 @@ public class BBDD {
 	        ResultSet rs = selectStmt.executeQuery();
 
 	        if (rs.next()) {
-	            // Registro ya existe: actualizar
 	            updateStmt.setString(1, horarioActual);
 	            updateStmt.setString(2, dni);
 	            updateStmt.executeUpdate();
 	            logger.info(String.format("Horario de inicio actualizado para cliente con DNI: %s", dni));
 	        } else {
-	            // Insertar nuevo registro
 	            insertStmt.setString(1, horarioActual);
 	            insertStmt.setString(2, dni);
 	            insertStmt.executeUpdate();
 	            logger.info(String.format("Sesión iniciada correctamente para cliente con DNI: %s", dni));
 	        }
+	        selectStmt.close();
+	        insertStmt.close();
+	        updateStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al insertar inicio de sesión: %s", e.getMessage()));
 	    }
@@ -1057,7 +1088,8 @@ public class BBDD {
 	    }
 	    return horarioActual;
 	}
-
+	//IAG ChatGPT
+	//Eliminar horarios pasados a la hora de iniciar sesion y todos los metodos que usa
 	public void eliminarHorariosPasados(String horarioInicioSesion) {
 	    List<String> horariosPasados = obtenerHorariosPasados(horarioInicioSesion);
 	    if (!horariosPasados.isEmpty()) {
@@ -1087,6 +1119,8 @@ public class BBDD {
 	            while (rs.next()) {
 	                horariosPasados.add(String.valueOf(rs.getInt("id")));
 	            }
+	            rs.close();
+	            pstmt.close();
 	        }
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al obtener horarios pasados: %s", e.getMessage()));
@@ -1112,6 +1146,7 @@ public class BBDD {
 	            deleteStmt.executeUpdate();
 	            logger.info(String.format("Entradas asociadas al horario con ID %s eliminadas.", horarioId));
 	        }
+	        deleteStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al eliminar entradas por horarios pasados: %s", e.getMessage()));
 	    }
@@ -1128,6 +1163,7 @@ public class BBDD {
 	            deleteStmt.executeUpdate();
 	            logger.info(String.format("Entradas compradas asociadas al horario con ID %s eliminadas.", horarioId));
 	        }
+	        deleteStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al eliminar entradas compradas por horarios pasados: %s", e.getMessage()));
 	    }
@@ -1144,6 +1180,7 @@ public class BBDD {
 	            deleteStmt.executeUpdate();
 	            logger.info(String.format("Asociaciones de butacas con el horario ID %s eliminadas.", horarioId));
 	        }
+	        deleteStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al eliminar asociaciones de butacas por horarios pasados: %s", e.getMessage()));
 	    }
@@ -1186,18 +1223,20 @@ public class BBDD {
 	            }
 
 	            if (horariosActualizados.length() == 0) {
-	                // Si los horarios están vacíos, eliminar la película.
 	                deleteStmt.setInt(1, peliculaId);
 	                deleteStmt.executeUpdate();
 	                logger.info(String.format("Película con ID %d eliminada debido a la falta de horarios.", peliculaId));
 	            } else if (actualizado) {
-	                // Si se actualizaron los horarios, actualizarlos en la base de datos.
 	                updateStmt.setString(1, horariosActualizados.toString());
 	                updateStmt.setInt(2, peliculaId);
 	                updateStmt.executeUpdate();
 	                logger.info(String.format("Película con ID %d actualizada con horarios: %s", peliculaId, horariosActualizados));
 	            }
 	        }
+	        rs.close();
+	        selectStmt.close();
+	        updateStmt.close();
+	        deleteStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al actualizar o eliminar películas: %s", e.getMessage()));
 	    }
@@ -1214,6 +1253,7 @@ public class BBDD {
 	            deleteStmt.executeUpdate();
 	            logger.info(String.format("Horario con ID %s eliminado de la tabla Horarios.", horarioId));
 	        }
+	        deleteStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al eliminar horarios pasados de la tabla Horarios: %s", e.getMessage()));
 	    }
@@ -1234,6 +1274,8 @@ public class BBDD {
                 logger.info(String.format("Se ha encontrado el horario con id: %d , correctamente", id));
 	            horario = rs.getString("horario");
 			}
+			rs.close();
+			pstmt.close();
 
 		} catch (SQLException e) {
             logger.warning(String.format("Error al devolver el horario", e.getMessage()));
@@ -1254,7 +1296,8 @@ public class BBDD {
                 logger.info(String.format("Se ha encontrado el horario con id: %d correctamente", rs.getInt("id")));
                 id = rs.getInt("id");
             }
-
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             logger.warning(String.format("Error al devolver el horario: %s", e.getMessage()));
         }
@@ -1301,6 +1344,8 @@ public class BBDD {
    	            e = new Entrada(id,butaca, pelicula.getId(), pelicula.getTitulo(), pelicula.getId_sala(), precio, horario, nombre, apellido, edad, apellido2);
    	            entradas.add(e);
                }
+  	           rs.close();
+  	           pstmt.close();
            } catch (SQLException ex) {
                logger.warning(String.format("Error al devolver el precio total: %s", ex.getMessage()));
            }
@@ -1319,7 +1364,9 @@ public class BBDD {
 	            } else {
 	                logger.warning(String.format("No se encontró un carrito asociado a la entrada: %s", entrada.toString()));
 	            }
+	            rs.close();
 	        }
+	        pStmt.close();
 	    } catch (Exception e) {
 	        logger.warning(String.format("Error al encontrar el Carrito para la entrada %s: %s", entrada.toString(), e.getMessage()));
 	    }
@@ -1338,28 +1385,13 @@ public class BBDD {
 		        while (rs.next()) { 
 		            numeroentradas++;
 		        }
+		        rs.close();
 		    }
+		    pStmt.close();
 		} catch (Exception e) {
 		    logger.warning(String.format("Error al contar las entradas compradas: %s", e.getMessage()));
  	    }
  	    return numeroentradas;
-    }
-    public void cambiarSalario(float salario, String dni) {
-        String sql = "UPDATE Cliente SET salario = ? WHERE dni = ?";
-        try (Connection con = DriverManager.getConnection(connectionString);
-             PreparedStatement pStmt = con.prepareStatement(sql)) {
-            pStmt.setFloat(1, salario);
-            pStmt.setString(2, dni);
-            
-            int rowsAffected = pStmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("Salario cambiado correctamente");
-            } else {
-                logger.info(String.format("Cliente con dni = %s no encontrado", dni));
-            }
-        } catch (Exception e) {
-            logger.warning(String.format("Error al cambiar el salario: %s", e.getMessage()));
-        }
     }
     public List<Pelicula> cogerPelis() {
     	String sql = "SELECT * FROM Pelicula";
@@ -1374,7 +1406,8 @@ public class BBDD {
         				rs.getFloat("duracion"), rs.getString("director"), rs.getString("rutafoto"), tresd, rs.getString("horarios"));
         		pelis.add(p);
         	}
-        	
+        	rs.close();
+        	pStmt.close();        	
         } catch (Exception e) {
             logger.warning(String.format("Error al devolver las peliculas: %s", e.getMessage()));
         }
@@ -1393,6 +1426,7 @@ public class BBDD {
             } else {
                 logger.info(String.format("No se encontro ninguna pelicula con horarios = %s", horarios));
             }
+            pStmt.close();
         } catch (Exception e) {
             logger.warning(String.format("Error al cambiar la duracion: %s", e.getMessage()));
         }
@@ -1419,7 +1453,7 @@ public class BBDD {
 			if (!Stmt.execute()) {
 				logger.info(String.format("Pelicula con titulo: %s insertado en la BBDD", p.getTitulo()));
 		    }
-			
+			Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nueva Pelicula: %s", ex.getMessage()));
 		}			
@@ -1436,6 +1470,8 @@ public class BBDD {
             if (rs.next()) {
             	enc = true;
             }
+            rs.close();
+            pStmt.close();
         } catch (Exception e) {
             logger.warning(String.format("Error al cambiar la duracion: %s", e.getMessage()));
         }
@@ -1453,9 +1489,11 @@ public class BBDD {
             
             if (rowsAffected > 0) {
                 logger.info(String.format("Película '%s' eliminada correctamente", titulo));
+                stmt.close();
                 return true;
             } else {
                 logger.warning(String.format("No se encontró una película con el título '%s'", titulo));
+                stmt.close();
                 return false;
             }
         } catch (Exception e) {
@@ -1474,7 +1512,8 @@ public class BBDD {
 					horarios.put(rs.getInt("id"), rs.getString("horario"));
 				}
         	}
-        	
+        	rs.close();
+        	pStmt.close();
         } catch (Exception e) {
             logger.warning(String.format("Error al devolver los horarios: %s", e.getMessage()));
         }
@@ -1490,7 +1529,7 @@ public class BBDD {
 			if (!Stmt.execute()) {
 				logger.info(String.format("Horario: %s insertado en la BBDD", horario));
 		    }
-			
+			Stmt.close();
 		} catch (Exception ex) {
 			logger.warning(String.format("Error al insertar nuevo horario: %s", ex.getMessage()));
 		}			
@@ -1514,4 +1553,22 @@ public class BBDD {
 		}
 		return existe;
 	}
+    public void cambiarSaldo(float saldoNuevo, String dni) {
+        String sql = "UPDATE Cliente SET salario = ? WHERE dni = ?";
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt = con.prepareStatement(sql)) {
+            pStmt.setFloat(1, saldoNuevo);
+            pStmt.setString(2, dni);
+            
+            int r = pStmt.executeUpdate();
+            if (r > 0) {
+                logger.info("Saldo cambiada correctamente");
+            } else {
+                logger.info(String.format("No se encontro ningun cliente con dni = %s", dni));
+            }
+            pStmt.close();
+        } catch (Exception e) {
+            logger.warning(String.format("Error al cambiar el saldo: %s", e.getMessage()));
+        }
+    }
 }

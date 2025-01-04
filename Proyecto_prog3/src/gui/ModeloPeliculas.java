@@ -55,12 +55,15 @@ public class ModeloPeliculas extends DefaultTableModel{
 		case 0: return p.getTitulo();
 		case 1: return p.getDirector();
 		case 2: return p.getTipo();
+        //IAG ChatGPT
+        //Como formatear el saldo
 		case 3: return String.format(Locale.US, "%.1f", p.getDuracion());
 		case 4: return p.getHorarios();
 		default: throw new IllegalArgumentException("Unexpected value: " + column);
 		}
 	}
-	
+    //IAG ChatGPT
+    //setValueAt para modificar la duracion
 	@Override
 	public void setValueAt(Object aValue, int row, int column) {
 	    Pelicula p = peliculas.get(row);
