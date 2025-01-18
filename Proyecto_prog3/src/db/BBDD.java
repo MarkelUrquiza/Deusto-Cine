@@ -172,14 +172,13 @@ public class BBDD {
     }
     //IAG ChatGPT
     //Insertar los datos por defecto a la base de datos
-    public void insertardatosporDefecto() {
+    public void insertarDatosPorDefecto() {
         if (properties.get("createBBDD").equals("true")) {
-            if (tablaTieneDatos("Cliente") && tablaTieneDatos("Pelicula") && tablaTieneDatos("Horarios") &&
-                    tablaTieneDatos("Carrito") && tablaTieneDatos("Entrada") && tablaTieneDatos("Butaca_Horario")) {
-                    logger.info("Los datos por defecto ya están insertados en todas las tablas. No se realizará ninguna acción.");
-                    return;
-                }
-        	
+            if (hayTablasConDatos()) {
+                logger.info("Al menos una tabla ya tiene datos. No se insertarán datos por defecto.");
+                return;
+            }
+
             String insertCliente = "INSERT OR IGNORE INTO Cliente (dni, username, contrasenia, nombre, apellidos, correo, salario) VALUES\n"
                     + "('11111111A', 'user1', 'pass1', 'John', 'Doe', 'john.doe@example.com', 56),\n"
                     + "('22222222B', 'user2', 'pass2', 'Jane', 'Doe', 'jane.doe@example.com', 78),\n"
@@ -192,7 +191,6 @@ public class BBDD {
                     + "('99999999I', 'user9', 'pass9', 'Hank', 'Wilson', 'hank.wilson@example.com', 54),\n"
                     + "('00000000J', 'user10', 'pass10', 'Ivy', 'Moore', 'ivy.moore@example.com', 21);";
 
-
             String insertPelicula = "INSERT OR IGNORE INTO Pelicula (id_sala, titulo, director, tipo, duracion, rutafoto, horarios, tresd) VALUES\n"
                     + "(1, 'Inception', 'Christopher Nolan', 'ACCION', 2.5, 'resource/images/Inception.png', '1,2', 1),\n"
                     + "(2, 'The Godfather', 'Francis Ford Coppola', 'DRAMA', 2.9, 'resource/images/TheGodfather.png', '3,4', 0),\n"
@@ -202,24 +200,24 @@ public class BBDD {
                     + "(2, 'Pulp Fiction', 'Quentin Tarantino', 'CRIMEN', 2.8, 'resource/images/PulpFiction.png', '11,12', 0),\n"
                     + "(3, 'Avengers: Endgame', 'Anthony Russo', 'ACCION', 3.1, 'resource/images/AvengersEndgame.png', '13,14', 1),\n"
                     + "(4, 'The Matrix', 'Lana Wachowski', 'CIENCIA_FICCION', 2.6, 'resource/images/TheMatrix.png', '15,16', 1);";
-           
+
             String insertHorarios = "INSERT OR IGNORE INTO Horarios (horario) VALUES\n"
-                    + "('2025-01-04 16:00'),\n"  // Inception
-                    + "('2025-01-04 18:30'),\n"
-                    + "('2025-01-05 17:00'),\n"  // Godfather
-                    + "('2025-01-05 20:30'),\n"
-                    + "('2025-01-06 16:00'),\n"  // Dune
-                    + "('2025-01-06 19:30'),\n"
-                    + "('2025-01-07 14:30'),\n"  // Interstellar
-                    + "('2025-01-07 19:00'),\n"
-                    + "('2025-01-08 14:30'),\n"  // Titanic
-                    + "('2025-01-08 19:00'),\n"
-                    + "('2025-01-09 16:00'),\n"  // Pulp Fiction
-                    + "('2025-01-09 20:00'),\n"
-                    + "('2025-01-10 14:00'),\n"  // EndGame
-                    + "('2025-01-10 21:00'),\n"
-                    + "('2025-01-11 17:00'),\n"  // Matrix
-                    + "('2025-01-11 20:00');";
+                    + "('2025-01-21 16:00'),\n"
+                    + "('2025-01-21 18:30'),\n"
+                    + "('2025-01-22 17:00'),\n"
+                    + "('2025-01-22 20:30'),\n"
+                    + "('2025-01-23 16:00'),\n"
+                    + "('2025-01-23 19:30'),\n"
+                    + "('2025-01-24 14:30'),\n"
+                    + "('2025-01-24 19:00'),\n"
+                    + "('2025-01-25 14:30'),\n"
+                    + "('2025-01-25 19:00'),\n"
+                    + "('2025-01-26 16:00'),\n"
+                    + "('2025-01-26 20:00'),\n"
+                    + "('2025-01-27 14:00'),\n"
+                    + "('2025-01-28 21:00'),\n"
+                    + "('2025-01-31 17:00'),\n"
+                    + "('2025-01-31 20:00');";
 
             String insertCarrito = "INSERT OR IGNORE INTO Carrito (cliente_dni) VALUES\n"
                     + "('11111111A'),\n"
@@ -239,51 +237,59 @@ public class BBDD {
                     + "(135, 3, 8, 15, 29, 'Sofía', 'Torres', 'Moreno'),\n"
                     + "(1, 4, 1, 2, 24, 'Diego', 'Morales', 'Navarro');";
 
-            
             String insertButacaHorario = "INSERT OR IGNORE INTO Butaca_Horario (id_butaca, id_horario) VALUES\n"
-            		+ "(4, 1),\n"
-            		+ "(49, 3),\n"
-            		+ "(98, 5),\n"
-            		+ "(139, 7),\n"
-            		+ "(1, 10),\n"
-            		+ "(36, 11),\n"
-            		+ "(92, 14),\n"
-            		+ "(134, 15),\n"
-            		+ "(135, 15),\n"
-            		+ "(1, 2);";
+                    + "(4, 1),\n"
+                    + "(49, 3),\n"
+                    + "(98, 5),\n"
+                    + "(139, 7),\n"
+                    + "(1, 10),\n"
+                    + "(36, 11),\n"
+                    + "(92, 14),\n"
+                    + "(134, 15),\n"
+                    + "(135, 15),\n"
+                    + "(1, 2);";
 
-            
             try (Connection con = DriverManager.getConnection(connectionString);
                  PreparedStatement insertStmt1 = con.prepareStatement(insertCliente);
                  PreparedStatement insertStmt2 = con.prepareStatement(insertPelicula);
                  PreparedStatement insertStmt3 = con.prepareStatement(insertCarrito);
                  PreparedStatement insertStmt4 = con.prepareStatement(insertEntrada);
                  PreparedStatement insertStmt5 = con.prepareStatement(insertHorarios);
-            	 PreparedStatement insertStmt6 = con.prepareStatement(insertButacaHorario);
-            		) {
+                 PreparedStatement insertStmt6 = con.prepareStatement(insertButacaHorario)) {
 
-                if (!insertStmt1.execute() && !insertStmt2.execute() && !insertStmt3.execute() && !insertStmt4.execute() && !insertStmt5.execute() && !insertStmt6.execute()) {
-                    logger.info("Se han insertado los datos correctamente.");
-                }
+                insertStmt1.execute();
+                insertStmt2.execute();
+                insertStmt3.execute();
+                insertStmt4.execute();
+                insertStmt5.execute();
+                insertStmt6.execute();
+
+                logger.info("Se han insertado los datos correctamente.");
             } catch (Exception e) {
                 logger.warning(String.format("Error al insertar los datos: %s", e.getMessage()));
             }
         }
-    }		  
-    
-    //IAG ChatGPT
-    //Mirar si existen las tablas
-    private boolean tablaTieneDatos(String tabla) {
-        String query = String.format("SELECT COUNT(*) AS total FROM %s", tabla);
-        try (Connection con = DriverManager.getConnection(connectionString);
-             PreparedStatement stmt = con.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            return rs.next() && rs.getInt("total") > 0;
-        } catch (SQLException e) {
-            logger.warning(String.format("Error al verificar datos en la tabla %s: %s", tabla, e.getMessage()));
-            return false;
-        }
     }
+    //IAG ChatGPT
+    //Controlar si alguna esta rellena, para no meter datos innecesarios
+    private boolean hayTablasConDatos() {
+        String[] tablas = {"Cliente", "Pelicula", "Horarios", "Carrito", "Entrada", "Butaca_Horario"};
+        try (Connection con = DriverManager.getConnection(connectionString)) {
+            for (String tabla : tablas) {
+                String query = String.format("SELECT COUNT(*) AS total FROM %s", tabla);
+                try (PreparedStatement stmt = con.prepareStatement(query);
+                     ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next() && rs.getInt("total") > 0) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.warning(String.format("Error al verificar datos en las tablas: %s", e.getMessage()));
+        }
+        return false;
+    }
+
 
 	public boolean existeUsuario(String username, String dni, String correo) {
 		boolean existe = false;
@@ -427,6 +433,7 @@ public class BBDD {
         		if (edad < 3) {
         			precio = -1;
         		} else if (edad < 10) {
+        			
         			precio = 0;
         		} else if (edad < 18) {
         			precio = 8;
@@ -1571,4 +1578,42 @@ public class BBDD {
             logger.warning(String.format("Error al cambiar el saldo: %s", e.getMessage()));
         }
     }
+    public void borrarBBDD() {
+        String sql1 = "DROP TABLE IF EXISTS Cliente;";
+        String sql2 = "DROP TABLE IF EXISTS Pelicula;";
+        String sql3 = "DROP TABLE IF EXISTS Entrada;";
+        String sql4 = "DROP TABLE IF EXISTS Carrito;";
+        String sql5 = "DROP TABLE IF EXISTS Butaca;";
+        String sql6 = "DROP TABLE IF EXISTS Butaca_Horario;";
+        String sql7 = "DROP TABLE IF EXISTS InicioSesion;";
+        String sql8 = "DROP TABLE IF EXISTS Horarios;";
+        String sql9 = "DROP TABLE IF EXISTS EntradasCompradas;";
+
+        try (Connection con = DriverManager.getConnection(connectionString);
+             PreparedStatement pStmt1 = con.prepareStatement(sql1);
+             PreparedStatement pStmt2 = con.prepareStatement(sql2);
+             PreparedStatement pStmt3 = con.prepareStatement(sql3);
+             PreparedStatement pStmt4 = con.prepareStatement(sql4);
+             PreparedStatement pStmt5 = con.prepareStatement(sql5);
+             PreparedStatement pStmt6 = con.prepareStatement(sql6);
+             PreparedStatement pStmt7 = con.prepareStatement(sql7);
+             PreparedStatement pStmt8 = con.prepareStatement(sql8);
+             PreparedStatement pStmt9 = con.prepareStatement(sql9)) {
+
+            if (!pStmt1.execute()) logger.info("Tabla Cliente eliminada o no existía.");
+            if (!pStmt2.execute()) logger.info("Tabla Pelicula eliminada o no existía.");
+            if (!pStmt3.execute()) logger.info("Tabla Entrada eliminada o no existía.");
+            if (!pStmt4.execute()) logger.info("Tabla Carrito eliminada o no existía.");
+            if (!pStmt5.execute()) logger.info("Tabla Butaca eliminada o no existía.");
+            if (!pStmt6.execute()) logger.info("Tabla Butaca_Horario eliminada o no existía.");
+            if (!pStmt7.execute()) logger.info("Tabla InicioSesion eliminada o no existía.");
+            if (!pStmt8.execute()) logger.info("Tabla Horarios eliminada o no existía.");
+            if (!pStmt9.execute()) logger.info("Tabla EntradasCompradas eliminada o no existía.");
+
+        } catch (Exception e) {
+            logger.warning(String.format("Error al eliminar las tablas: %s", e.getMessage()));
+        }
+        
+    }
+
 }

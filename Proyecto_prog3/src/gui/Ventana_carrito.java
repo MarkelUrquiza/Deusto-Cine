@@ -119,16 +119,27 @@ public class Ventana_carrito extends JFrame{
 		});
 		btnañadirsaldo = new JButton("");
 		btnañadirsaldo.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String result = JOptionPane.showInputDialog(null, "Introduce la cantidad que vas a depositar:", "AÑADIR SALDO", JOptionPane.INFORMATION_MESSAGE);
-				vActual.setVisible(false);
-				c.setSalario(c.getSalario() + Integer.parseInt(result));
-				bd.cambiarSaldo(c.getSalario(), c.getDni());
-				new Tarjeta(vInicial, Integer.parseInt(result));
-			}
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String result = JOptionPane.showInputDialog(null, "Introduce la cantidad que vas a depositar:", "AÑADIR SALDO", JOptionPane.INFORMATION_MESSAGE);
+		        //IAG ChatGPT
+		        //Para ver si ha cerrado el JOptionPane
+		        if (result == null || result.trim().isEmpty()) {
+		            JOptionPane.showMessageDialog(null, "Has cerrado la pestaña o no has puesto ningun valor.", "Error", JOptionPane.ERROR_MESSAGE);
+		            return;
+		        }
+		        try {
+		            int cantidad = Integer.parseInt(result.trim());
+		            vActual.setVisible(false);
+		            c.setSalario(c.getSalario() + cantidad);
+		            bd.cambiarSaldo(c.getSalario(), c.getDni());
+		            new Tarjeta(vInicial, cantidad);
+		        } catch (NumberFormatException ex) {
+		            JOptionPane.showMessageDialog(null, "Por favor, introduce un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+		        }
+		    }
 		});
+
 		ImageIcon img3 = new ImageIcon("resource/images/wallet.png");
     	Image imagenOriginalcolumn3 = img3.getImage();
 		Image imagenRedimensionadacolumn3 = imagenOriginalcolumn3.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
@@ -206,14 +217,11 @@ public class Ventana_carrito extends JFrame{
 		                case "SALA":
 		                    resaltar = column == 1 && value.toString().toLowerCase().contains(filtroTexto);
 		                    break;
-		                case "HORARIO":
+		                case "FECHA":
 		                    resaltar = column == 2 && value.toString().toLowerCase().contains(filtroTexto);
 		                    break;
-		                case "PRECIO TOTAL":
+		                case "PRECIO":
 		                    resaltar = column == 3 && value.toString().toLowerCase().contains(filtroTexto);
-		                    break;
-		                case "NUMERO DE ENTRADAS":
-		                    resaltar = column == 4 && value.toString().toLowerCase().contains(filtroTexto);
 		                    break;
 		            }
 		        }

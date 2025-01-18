@@ -99,7 +99,6 @@ public class Inicio_sesion extends JFrame {
                 	String h = bd.InicioSesion(c.getDni());
 					logger.info(String.format("Se ha iniciado sesion a las: "+ h + ". Desde el usuario con DNI: " + c.getDni()));
                     bd.eliminarHorariosPasados(h);
-
                     
                 	if (c.getCarrito_de_compra() == null ) {
                 	    c.setCarrito_de_compra(bd.cargarCarrito(c.getDni()));
@@ -266,15 +265,24 @@ public class Inicio_sesion extends JFrame {
         setVisible(true);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);		
 		
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que quieres cerrar la ventana?", "Confirmar cierre", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (result != JOptionPane.OK_OPTION) {
-                    System.exit(0);
-                }
-            }
-        });
+		addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		        int result = JOptionPane.showConfirmDialog(null, 
+		                "¿Estás seguro de que quieres cerrar la ventana?", 
+		                "Confirmar cierre", 
+		                JOptionPane.OK_CANCEL_OPTION, 
+		                JOptionPane.QUESTION_MESSAGE);
+
+		        if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+		            return;
+		        } else {
+		            System.exit(0);
+		        }
+		    }
+		});
+
+
     }
    
 }

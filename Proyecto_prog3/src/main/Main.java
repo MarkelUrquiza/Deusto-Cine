@@ -10,7 +10,7 @@ public class Main {
 		BBDD bd = new BBDD();
 		bd.crearBBDD();
 		bd.inicilizarButacasContxt();
-		bd.insertardatosporDefecto();
+		bd.insertarDatosPorDefecto();
         
 		new Inicio_sesion(bd);
 

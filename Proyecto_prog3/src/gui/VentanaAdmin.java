@@ -46,7 +46,7 @@ public class VentanaAdmin extends JFrame {
     private ModeloPeliculas modelo;
     private DefaultTableModel modeloHorarios;
     private JScrollPane scroll, scrollHorarios;
-    private JButton btnVolver, btnEliminar, btnhorarios, btnaniadir;
+    private JButton btnVolver, btnEliminar, btnhorarios, btnaniadir,btnborrarbd;
     private int mouse = -1;
     private JFrame vInicial, vActual;
     private JPanel pCentral, psur;
@@ -68,7 +68,7 @@ public class VentanaAdmin extends JFrame {
                 vInicial.setVisible(true);
             }
         });
-
+        
         btnhorarios = new JButton("MOSTRAR HORARIOS");
         btnhorarios.addActionListener(new ActionListener() {
 			
@@ -317,7 +317,17 @@ public class VentanaAdmin extends JFrame {
                 }
             }
         });
-
+        btnborrarbd = new JButton("BORRAR BD");
+        btnborrarbd.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bd.borrarBBDD();
+				bd.crearBBDD();
+                vActual.dispose();
+                vInicial.setVisible(true);
+			}
+		});
         pCentral.add(scroll);
         pCentral.add(scrollHorarios);
 
@@ -328,6 +338,7 @@ public class VentanaAdmin extends JFrame {
         psur.add(btnEliminar);
         psur.add(btnhorarios);
         psur.add(btnaniadir);
+        psur.add(btnborrarbd);
 
         ImageIcon imagen = new ImageIcon("resource/images/icono.png");
         setIconImage(imagen.getImage());

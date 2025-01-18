@@ -30,6 +30,7 @@ public class Ventana_elegirbutaca extends JFrame {
     private ModeloElegirButacas modelotabla;
     private JScrollPane scroll;
     private int fila, columna;
+    private JLabel aviso;
 
     public Ventana_elegirbutaca(JFrame vI, BBDD bd, int id_sala, Consumer<Butaca> callback, String horario, Cartelera cartelera) {
 
@@ -132,7 +133,7 @@ public class Ventana_elegirbutaca extends JFrame {
                     j.setBackground(Color.gray);
                 } else {
                     if (row == fila && column == columna) {
-                        j.setBackground(Color.LIGHT_GRAY);
+                        j.setBackground(Color.blue);
                     } else {
                         j.setBackground(Color.white);
                     }
@@ -144,7 +145,12 @@ public class Ventana_elegirbutaca extends JFrame {
         tabla.setRowHeight(50);
         tabla.getTableHeader().setReorderingAllowed(false);
         scroll = new JScrollPane(tabla);
-
+        
+        aviso = new JLabel("Haz doble click sobre el asiento para elegirlo");
+        aviso.setFont(new Font("Arial", Font.BOLD, 18));
+        
+        pnorte.add(aviso);
+        
         getContentPane().add(scroll, BorderLayout.CENTER);
         getContentPane().add(psur, BorderLayout.SOUTH);
         getContentPane().add(pnorte, BorderLayout.NORTH);
